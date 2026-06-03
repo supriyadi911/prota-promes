@@ -66,10 +66,6 @@
         }
         /* Custom styles for printing */
         @media print {
-            @page {
-                size: A4;
-                margin: 1cm;
-            }
             body {
                 background: white !important;
                 color: black !important;
@@ -84,11 +80,6 @@
                 padding: 0 !important;
                 box-shadow: none !important;
             }
-            .landscape-print {
-                /* Forcing landscape if browser supports it via CSS */
-                size: landscape; 
-            }
-            
             /* Print pagination fixes */
             table {
                 page-break-inside: auto;
@@ -1234,7 +1225,7 @@
     </div>
 
     <!-- AREA DOKUMEN CETAK RESMI (Hanya muncul saat Print fisik) -->
-    <div id="print-view" class="hidden print-area bg-white text-black text-sm p-8 leading-relaxed">
+    <div id="print-view" class="hidden print-area bg-white text-black font-sans text-[11px] w-full leading-relaxed">
         <!-- Built dynamically on-demand -->
     </div>
 
@@ -2844,21 +2835,33 @@
             return null;
         }
 
+        // Pengaturan CSS Ukuran Kertas Dinamis untuk Print
+        function setPrintPageSize(orientation) {
+            let style = document.getElementById('print-page-style');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'print-page-style';
+                document.head.appendChild(style);
+            }
+            style.innerHTML = `@media print { @page { size: A4 ${orientation}; margin: 1cm; } }`;
+        }
+
         function showProtaPreview() {
+            setPrintPageSize('portrait');
             const previewTitle = document.getElementById('modal-preview-title');
             if (previewTitle) previewTitle.innerHTML = '<i class="fa-solid fa-eye text-primary-500"></i><span>Pratinjau Cetak PROTA Resmi</span>';
             const printHTML = buildProtaPrintHTML();
             
             const modalContent = document.getElementById('modal-print-content');
             if (modalContent) {
-                modalContent.className = "bg-white text-black p-8 shadow-lg w-full max-w-[210mm] min-h-[297mm] border border-slate-200 rounded-md font-sans self-start transition-all mx-auto";
+                modalContent.className = "bg-white text-black p-8 shadow-lg w-full max-w-[210mm] min-h-[297mm] border border-slate-200 rounded-md font-sans text-[11px] self-start transition-all mx-auto";
                 modalContent.innerHTML = printHTML;
             }
             
             const printView = document.getElementById('print-view');
             if (printView) {
+                printView.className = 'hidden print-area bg-white text-black font-sans text-[11px] w-full leading-relaxed';
                 printView.innerHTML = printHTML;
-                printView.classList.remove('landscape-print'); 
             }
             
             const previewModal = document.getElementById('preview-modal');
@@ -2866,20 +2869,21 @@
         }
 
         function showPromesPreview() {
+            setPrintPageSize('landscape');
             const previewTitle = document.getElementById('modal-preview-title');
             if (previewTitle) previewTitle.innerHTML = '<i class="fa-solid fa-eye text-primary-500"></i><span>Pratinjau Cetak Matriks PROMES Resmi</span>';
             const printHTML = buildPromesPrintHTML();
             
             const modalContent = document.getElementById('modal-print-content');
             if (modalContent) {
-                modalContent.className = "bg-white text-black p-6 shadow-lg w-full max-w-[297mm] min-h-[210mm] border border-slate-200 rounded-md font-sans self-start transition-all mx-auto";
+                modalContent.className = "bg-white text-black p-6 shadow-lg w-full max-w-[297mm] min-h-[210mm] border border-slate-200 rounded-md font-sans text-[11px] self-start transition-all mx-auto";
                 modalContent.innerHTML = printHTML;
             }
             
             const printView = document.getElementById('print-view');
             if (printView) {
+                printView.className = 'hidden print-area bg-white text-black font-sans text-[11px] w-full leading-relaxed';
                 printView.innerHTML = printHTML;
-                printView.classList.add('landscape-print'); 
             }
             
             const previewModal = document.getElementById('preview-modal');
@@ -2896,18 +2900,22 @@
         }
 
         function printProta() {
+            setPrintPageSize('portrait');
             const printView = document.getElementById('print-view');
-            if (printView) printView.classList.remove('landscape-print');
-            const printHTML = buildProtaPrintHTML();
-            if (printView) printView.innerHTML = printHTML;
+            if (printView) {
+                printView.className = 'hidden print-area bg-white text-black font-sans text-[11px] w-full leading-relaxed';
+                printView.innerHTML = buildProtaPrintHTML();
+            }
             window.print();
         }
 
         function printPromes() {
+            setPrintPageSize('landscape');
             const printView = document.getElementById('print-view');
-            if (printView) printView.classList.add('landscape-print');
-            const printHTML = buildPromesPrintHTML();
-            if (printView) printView.innerHTML = printHTML;
+            if (printView) {
+                printView.className = 'hidden print-area bg-white text-black font-sans text-[11px] w-full leading-relaxed';
+                printView.innerHTML = buildPromesPrintHTML();
+            }
             window.print();
         }
 
