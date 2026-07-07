@@ -366,7 +366,11 @@
                                     <input type="text" id="sch-address" class="w-full border border-slate-200 dark:border-slate-700 bg-transparent rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Alamat lengkap sekolah">
                                 </div>
                                 <div class="space-y-1 md:col-span-2">
-                                    <label class="text-xs font-semibold text-slate-500 dark:text-slate-400">URL Logo Sekolah (Link Gambar)</label>
+                                    <label class="text-xs font-semibold text-slate-500 dark:text-slate-400">URL Logo Dinas Pendidikan (Kiri)</label>
+                                    <input type="url" id="sch-logo-dinas" class="w-full border border-slate-200 dark:border-slate-700 bg-transparent rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-blue-500" placeholder="https://contoh.com/logo-dinas.png">
+                                </div>
+                                <div class="space-y-1 md:col-span-2">
+                                    <label class="text-xs font-semibold text-slate-500 dark:text-slate-400">URL Logo Sekolah (Kanan)</label>
                                     <input type="url" id="sch-logo" class="w-full border border-slate-200 dark:border-slate-700 bg-transparent rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-blue-500" placeholder="https://contoh.com/logo-sekolah.png">
                                 </div>
                                 <div class="space-y-1">
@@ -1254,7 +1258,8 @@
             school: {
                 name: "SD Negeri Merdeka Mandiri",
                 npsn: "10293847",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Tut_Wuri_Handayani_Logo.png",
+                logoDinas: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Tut_Wuri_Handayani_Logo.png",
+                logo: "",
                 address: "Jl. Pendidikan No. 45, Bandar Lampung, Lampung",
                 tp: "2026/2027",
                 semester: "1",
@@ -1531,6 +1536,7 @@
 
             safeSetVal('sch-name', appData.school.name || '');
             safeSetVal('sch-npsn', appData.school.npsn || '');
+            safeSetVal('sch-logo-dinas', appData.school.logoDinas || '');
             safeSetVal('sch-logo', appData.school.logo || '');
             safeSetVal('sch-address', appData.school.address || '');
             safeSetVal('sch-tp', appData.school.tp || '');
@@ -1681,6 +1687,7 @@
             const getVal = id => document.getElementById(id) ? document.getElementById(id).value : "";
             appData.school.name = getVal('sch-name');
             appData.school.npsn = getVal('sch-npsn');
+            appData.school.logoDinas = getVal('sch-logo-dinas');
             appData.school.logo = getVal('sch-logo');
             appData.school.address = getVal('sch-address');
             appData.school.tp = getVal('sch-tp');
@@ -2528,21 +2535,27 @@
         // ==========================================
 
         function buildDocumentHeaderHTML(titleText, subtitleText, levelText, kelasText, semesterText) {
-            const logoHTML = appData.school.logo 
-                ? `<img src="${appData.school.logo}" class="max-w-full max-h-full object-contain mx-auto" alt="Logo">` 
+            const logoDinasHTML = appData.school.logoDinas 
+                ? `<img src="${appData.school.logoDinas}" class="max-w-full max-h-full object-contain mx-auto" alt="Logo Dinas">` 
+                : `LOGO<br>DINAS`;
+
+            const logoSekolahHTML = appData.school.logo 
+                ? `<img src="${appData.school.logo}" class="max-w-full max-h-full object-contain mx-auto" alt="Logo Sekolah">` 
                 : `LOGO<br>SEKOLAH`;
 
             return `
                 <div class="flex items-center justify-between border-b-4 border-double border-black pb-4 mb-4">
-                    <div class="w-20 h-20 bg-transparent flex items-center justify-center font-bold text-[10px] text-center uppercase overflow-hidden">
-                        ${logoHTML}
+                    <div class="w-20 h-20 shrink-0 bg-transparent flex items-center justify-center font-bold text-[10px] text-center uppercase overflow-hidden">
+                        ${logoDinasHTML}
                     </div>
                     <div class="text-center flex-1 mx-4">
                         <h2 class="font-extrabold text-lg uppercase tracking-wider">${appData.school.name || "NAMA SEKOLAH BELUM DIATUR"}</h2>
                         <p class="text-[11px] italic">Alamat: ${appData.school.address || "-"} | NPSN: ${appData.school.npsn || "-"}</p>
                         <h1 class="font-bold text-sm tracking-widest mt-1 uppercase">${titleText}</h1>
                     </div>
-                    <div class="w-20 h-20 opacity-0">LOGO</div>
+                    <div class="w-20 h-20 shrink-0 bg-transparent flex items-center justify-center font-bold text-[10px] text-center uppercase overflow-hidden">
+                        ${logoSekolahHTML}
+                    </div>
                 </div>
 
                 <div class="mb-4 border border-black p-3 bg-slate-50">
@@ -3176,7 +3189,7 @@
                 localStorage.removeItem('pro_admin_data');
                 appData = {
                     school: {
-                        name: "", npsn: "", logo: "", address: "", tp: "2026/2027", semester: "1",
+                        name: "", npsn: "", logoDinas: "", logo: "", address: "", tp: "2026/2027", semester: "1",
                         teacher: "", nip: "", principal: "", principalNip: "", subject: "", city: "", level: "SD"
                     },
                     kalender: {
@@ -3217,7 +3230,8 @@
                     school: {
                         name: "SD Negeri Merdeka Mandiri",
                         npsn: "10293847",
-                        logo: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Tut_Wuri_Handayani_Logo.png",
+                        logoDinas: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Tut_Wuri_Handayani_Logo.png",
+                        logo: "",
                         address: "Jl. Pendidikan No. 45, Bandar Lampung, Lampung",
                         tp: "2026/2027",
                         semester: "1",
@@ -3278,6 +3292,7 @@
                     school: {
                         name: "SMP Negeri 5 Harapan Bangsa",
                         npsn: "20193812",
+                        logoDinas: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Tut_Wuri_Handayani_Logo.png",
                         logo: "",
                         address: "Jl. Ki Hajar Dewantara No. 10, Surabaya, Jawa Timur",
                         tp: "2026/2027",
@@ -3333,6 +3348,7 @@
                     school: {
                         name: "SMA Negeri 1 Prestasi Bangsa",
                         npsn: "10293847",
+                        logoDinas: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Tut_Wuri_Handayani_Logo.png",
                         logo: "",
                         address: "Jalan Diponegoro No. 12, Jakarta Pusat",
                         tp: "2026/2027",
