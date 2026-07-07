@@ -66,6 +66,11 @@
         }
         /* Custom styles for printing */
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
             body {
                 background: white !important;
                 color: black !important;
@@ -2625,7 +2630,9 @@
             if (appData.prota.length === 0) {
                 html += `<tr><td colspan="6" class="border border-black px-3 py-4 text-center">Tidak ada data program tahunan</td></tr>`;
             } else {
+                let totalJpProta = 0;
                 appData.prota.forEach((item, index) => {
+                    totalJpProta += item.jp;
                     let tpListHTML = `<ol class="list-decimal pl-4 mt-1 text-[11px] space-y-1 text-gray-700">`;
                     if (item.tps && item.tps.length > 0) {
                         item.tps.forEach(tp => {
@@ -2656,6 +2663,14 @@
                         </tr>
                     `;
                 });
+                
+                html += `
+                    <tr class="bg-gray-100">
+                        <td colspan="4" class="border border-black px-2 py-2 text-right font-bold uppercase tracking-wider">Jumlah Total Alokasi Waktu</td>
+                        <td class="border border-black px-2 py-2 text-center font-bold text-[11px]">${totalJpProta} JP</td>
+                        <td class="border border-black px-2 py-2 bg-gray-100"></td>
+                    </tr>
+                `;
             }
 
             html += `</tbody></table>`;
@@ -2721,7 +2736,9 @@
             if (filteredPromes.length === 0) {
                 html += `<tr><td colspan="${4 + totalDynamicCols}" class="border border-black px-3 py-4 text-center">Tidak ada data alokasi program semester untuk semester ini.</td></tr>`;
             } else {
+                let totalJpPromes = 0;
                 filteredPromes.forEach((item, index) => {
+                    totalJpPromes += item.jp;
                     const rowSpan = item.tps && item.tps.length > 0 ? item.tps.length : 1;
 
                     if (!item.tps || item.tps.length === 0) {
@@ -2737,9 +2754,9 @@
                             for (let w = 1; w <= wCount; w++) {
                                 let nonEfektifTag = getNonEfektifTag(m, w, currentSemester, keg);
                                 if (nonEfektifTag) {
-                                    html += `<td class="border border-black text-center bg-rose-100 text-rose-800 font-extrabold text-[8px]">${nonEfektifTag}</td>`;
+                                    html += `<td class="border border-black text-center bg-rose-200 text-rose-900 font-bold text-[8px] p-0 align-middle">${nonEfektifTag}</td>`;
                                 } else if (item.bulan === m && item.minggu === w) {
-                                    html += `<td class="border border-black text-center bg-gray-200 font-bold text-[10px]">${item.jp}</td>`;
+                                    html += `<td class="border border-black text-center bg-sky-200 text-sky-950 font-extrabold text-[10px] p-0 align-middle">${item.jp}</td>`;
                                 } else {
                                     html += `<td class="border border-black text-center text-transparent">-</td>`;
                                 }
@@ -2770,15 +2787,14 @@
                                     let nonEfektifTag = getNonEfektifTag(m, w, currentSemester, keg);
                                     if (nonEfektifTag) {
                                         html += `
-                                            <td class="border border-black text-center bg-gray-200 text-gray-800 font-bold text-[6px] tracking-tighter p-0 align-middle">
+                                            <td class="border border-black text-center bg-rose-200 text-rose-900 font-bold text-[6px] tracking-tighter p-0 align-middle">
                                                 ${nonEfektifTag}
                                             </td>
                                         `;
                                     } else if (item.bulan === m && item.minggu === w) {
                                         html += `
-                                            <td class="border border-black text-center text-black font-extrabold text-[8px] p-0 align-middle relative">
-                                                <div class="absolute inset-0 bg-gray-300 opacity-30 z-0 print:hidden"></div>
-                                                <span class="relative z-10">${tpObj.jp}</span>
+                                            <td class="border border-black text-center bg-sky-200 text-sky-950 font-extrabold text-[8px] p-0 align-middle">
+                                                ${tpObj.jp}
                                             </td>
                                         `;
                                     } else {
@@ -2791,6 +2807,14 @@
                         });
                     }
                 });
+                
+                html += `
+                    <tr class="bg-slate-100">
+                        <td colspan="3" class="border border-black px-2 py-2 text-right font-bold uppercase tracking-wider text-[10px]">Jumlah Total Alokasi Waktu</td>
+                        <td class="border border-black p-0 text-center font-bold align-middle text-slate-900 text-[10px]">${totalJpPromes}</td>
+                        <td colspan="${totalDynamicCols}" class="border border-black bg-slate-200"></td>
+                    </tr>
+                `;
             }
 
             html += `</tbody></table></div>`;
@@ -2801,7 +2825,7 @@
                 if (k.semester === currentSemester) {
                     customLegendHTML += `
                         <div class="flex items-center space-x-1">
-                            <span class="w-5 h-3 border border-black inline-block text-center text-[7px] font-bold leading-tight">${k.singkatan}</span>
+                            <span class="w-5 h-3 bg-rose-200 border border-black inline-block text-center text-[7px] font-bold leading-tight text-rose-900">${k.singkatan}</span>
                             <span class="text-slate-600 text-[8px]">${k.nama}</span>
                         </div>
                     `;
@@ -2812,19 +2836,19 @@
                 <div class="mt-2 grid grid-cols-3 md:grid-cols-5 gap-2 p-2 bg-slate-50 border border-slate-200 text-[9px] rounded">
                     <p class="font-bold col-span-full uppercase text-[8px] text-slate-600 border-b border-slate-200 pb-1 mb-1">Legenda Kalender:</p>
                     <div class="flex items-center space-x-1">
-                        <span class="w-5 h-3 border border-black inline-block text-center text-[7px] font-bold leading-tight">1</span>
+                        <span class="w-5 h-3 bg-sky-200 border border-black inline-block text-center text-[7px] font-bold leading-tight text-sky-950">1</span>
                         <span class="text-slate-600 text-[8px]">JP Efektif</span>
                     </div>
                     <div class="flex items-center space-x-1">
-                        <span class="w-5 h-3 bg-gray-200 border border-black inline-block text-center text-[7px] font-bold leading-tight">STS</span>
+                        <span class="w-5 h-3 bg-rose-200 border border-black inline-block text-center text-[7px] font-bold leading-tight text-rose-900">STS</span>
                         <span class="text-slate-600 text-[8px]">Asesmen Tengah</span>
                     </div>
                     <div class="flex items-center space-x-1">
-                        <span class="w-5 h-3 bg-gray-200 border border-black inline-block text-center text-[7px] font-bold leading-tight">SAS</span>
+                        <span class="w-5 h-3 bg-rose-200 border border-black inline-block text-center text-[7px] font-bold leading-tight text-rose-900">SAS</span>
                         <span class="text-slate-600 text-[8px]">Asesmen Akhir</span>
                     </div>
                     <div class="flex items-center space-x-1">
-                        <span class="w-5 h-3 bg-gray-200 border border-black inline-block text-center text-[7px] font-bold leading-tight">LBR</span>
+                        <span class="w-5 h-3 bg-rose-200 border border-black inline-block text-center text-[7px] font-bold leading-tight text-rose-900">LBR</span>
                         <span class="text-slate-600 text-[8px]">Libur Semester</span>
                     </div>
                     ${customLegendHTML}
