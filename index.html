@@ -821,7 +821,7 @@
                                 </div>
                             </div>
 
-                            <!-- List Kegiatan Kustom Atif -->
+                            <!-- List Kegiatan Kustom Aktif -->
                             <div class="space-y-2">
                                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Daftar Kegiatan Kustom yang Terdaftar:</p>
                                 <div class="overflow-x-auto border dark:border-slate-800 rounded-lg">
@@ -866,7 +866,7 @@
                                 </select>
                             </div>
                             <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400">Fase</label>
+                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400">Fase Kurikulum</label>
                                 <select id="prota-fase" class="w-full border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                                     <!-- Diisi dinamis -->
                                 </select>
@@ -874,8 +874,8 @@
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-slate-500 dark:text-slate-400">Semester</label>
                                 <select id="prota-semester" class="w-full border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
-                                    <option value="1">Ganjil</option>
-                                    <option value="2">Genap</option>
+                                    <option value="1">Semester Ganjil</option>
+                                    <option value="2">Semester Genap</option>
                                 </select>
                             </div>
                             <div class="space-y-1">
@@ -985,6 +985,11 @@
 
                         <!-- Tombol Export/Print PROTA -->
                         <div class="flex flex-wrap items-center gap-2">
+                            <!-- Tombol Delete Massal Prota (Muncul dinamis jika dicentang) -->
+                            <button id="btn-delete-prota-selected" onclick="deleteSelectedProta()" class="hidden bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center space-x-1.5 transition-all shadow-md shadow-rose-500/20">
+                                <i class="fa-solid fa-trash-can animate-pulse"></i>
+                                <span>Hapus Terpilih</span>
+                            </button>
                             <button onclick="copyProtaToPromesAll()" class="bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 text-xs font-bold px-3 py-2 rounded-lg flex items-center space-x-1 transition-colors" title="Salin seluruh materi PROTA ke dalam form rancangan PROMES">
                                 <i class="fa-solid fa-copy"></i>
                                 <span class="hidden sm:inline">Salin ke PROMES</span>
@@ -1007,10 +1012,13 @@
                             <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400">
                                 <thead class="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
                                     <tr>
-                                        <th class="px-6 py-4 text-center w-12">No</th>
-                                        <th class="px-6 py-4">Fase/Kelas</th>
+                                        <th class="px-4 py-4 text-center w-12 no-print">
+                                            <input type="checkbox" id="bulk-select-prota" onchange="toggleSelectAllProta(this)" class="rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-slate-300">
+                                        </th>
+                                        <th class="px-4 py-4 text-center w-12">No</th>
+                                        <th class="px-6 py-4 w-28">Fase/Kelas</th>
                                         <th class="px-6 py-4">Materi Pokok / CP & Daftar Tujuan Pembelajaran (TP)</th>
-                                        <th class="px-6 py-4 text-center w-24">JP Total</th>
+                                        <th class="px-6 py-4 text-center w-28">JP Total</th>
                                         <th class="px-6 py-4">Bulan Estimasi</th>
                                         <th class="px-6 py-4 text-center w-32 no-print">Aksi</th>
                                     </tr>
@@ -1063,7 +1071,7 @@
                         <div class="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-inner mt-2">
                             <div class="mb-4">
                                 <label class="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide flex items-center gap-2">
-                                    <div class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400 flex items-center justify-center">
+                                    <div class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 flex items-center justify-center">
                                         <i class="fa-solid fa-list-check"></i>
                                     </div>
                                     <span>Rincian TP & Ulangan Harian</span>
@@ -1107,6 +1115,11 @@
 
                         <!-- Print & Reset Promes -->
                         <div class="flex flex-wrap items-center gap-2">
+                            <!-- Tombol Delete Massal Promes (Muncul dinamis jika dicentang) -->
+                            <button id="btn-delete-promes-selected" onclick="deleteSelectedPromes()" class="hidden bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center space-x-1.5 transition-all shadow-md shadow-rose-500/20">
+                                <i class="fa-solid fa-trash-can animate-pulse"></i>
+                                <span>Hapus Terpilih</span>
+                            </button>
                             <!-- Tombol Preview Cetak PROMES -->
                             <button onclick="showPromesPreview()" class="bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold px-3 py-2 rounded-lg flex items-center space-x-1.5 transition-colors">
                                 <i class="fa-solid fa-eye"></i>
@@ -1129,6 +1142,9 @@
                             <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[800px]">
                                 <thead class="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
                                     <tr>
+                                        <th class="px-4 py-3 w-12 text-center no-print">
+                                            <input type="checkbox" id="bulk-select-promes" onchange="toggleSelectAllPromes(this)" class="rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-slate-300">
+                                        </th>
                                         <th class="px-4 py-3 w-12 text-center">No</th>
                                         <th class="px-4 py-3">Materi Pembelajaran & Rincian TP Terpilih</th>
                                         <th class="px-4 py-3 text-center w-20">Jml JP</th>
@@ -1258,8 +1274,7 @@
             school: {
                 name: "SD Negeri Merdeka Mandiri",
                 npsn: "10293847",
-                logoDinas: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Tut_Wuri_Handayani_Logo.png",
-                logo: "",
+                logo: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Tut_Wuri_Handayani_Logo.png",
                 address: "Jl. Pendidikan No. 45, Bandar Lampung, Lampung",
                 tp: "2026/2027",
                 semester: "1",
@@ -1988,6 +2003,60 @@
             }
         }
 
+        // --- BULK ACTION UNTUK PROTA ---
+        function toggleSelectAllProta(masterCheckbox) {
+            const rowCheckboxes = document.querySelectorAll('.prota-row-checkbox');
+            rowCheckboxes.forEach(cb => {
+                cb.checked = masterCheckbox.checked;
+            });
+            checkBulkSelectProtaStatus();
+        }
+
+        function checkBulkSelectProtaStatus() {
+            const total = document.querySelectorAll('.prota-row-checkbox').length;
+            const checked = document.querySelectorAll('.prota-row-checkbox:checked').length;
+            const masterCheckbox = document.getElementById('bulk-select-prota');
+            const deleteBtn = document.getElementById('btn-delete-prota-selected');
+
+            if (masterCheckbox) {
+                masterCheckbox.checked = (total > 0 && checked === total);
+                masterCheckbox.indeterminate = (checked > 0 && checked < total);
+            }
+
+            if (deleteBtn) {
+                if (checked > 0) {
+                    deleteBtn.classList.remove('hidden');
+                } else {
+                    deleteBtn.classList.add('hidden');
+                }
+            }
+        }
+
+        function deleteSelectedProta() {
+            const checkedBoxes = document.querySelectorAll('.prota-row-checkbox:checked');
+            if (checkedBoxes.length === 0) return;
+
+            if (confirm(`Apakah Anda yakin ingin menghapus ${checkedBoxes.length} materi PROTA terpilih secara permanen?`)) {
+                // Ambil semua index, urutkan dari terbesar ke terkecil agar aman dari bug pergeseran urutan array saat splice
+                const indices = Array.from(checkedBoxes).map(cb => parseInt(cb.getAttribute('data-index')));
+                indices.sort((a, b) => b - a);
+
+                indices.forEach(idx => {
+                    appData.prota.splice(idx, 1);
+                });
+
+                saveToLocalStorage();
+                renderProta();
+                renderCharts();
+                
+                const masterCheckbox = document.getElementById('bulk-select-prota');
+                if (masterCheckbox) masterCheckbox.checked = false;
+                checkBulkSelectProtaStatus();
+
+                showNotif("Hapus Massal", `${checkedBoxes.length} materi PROTA berhasil dibersihkan.`, "success");
+            }
+        }
+
         function renderProta() {
             const listEl = document.getElementById('prota-list');
             if (!listEl) return;
@@ -2029,7 +2098,10 @@
 
                 listEl.innerHTML += `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                        <td class="px-6 py-4 text-center font-bold text-slate-400 text-xs">${count}</td>
+                        <td class="px-4 py-4 text-center no-print">
+                            <input type="checkbox" class="prota-row-checkbox rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-slate-300" data-index="${index}" onchange="checkBulkSelectProtaStatus()">
+                        </td>
+                        <td class="px-4 py-4 text-center font-bold text-slate-400 text-xs">${count}</td>
                         <td class="px-6 py-4">
                             <span class="text-xs bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 font-semibold px-2 py-1 rounded block w-max">${item.fase}</span>
                             <span class="text-[11px] text-slate-400 mt-1 block">Kelas ${item.kelas} (Smt ${item.semester})</span>
@@ -2063,13 +2135,16 @@
             });
 
             if (count === 0) {
-                listEl.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-xs text-slate-400"><i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-300 block"></i>Belum ada data materi program tahunan (PROTA).</td></tr>`;
+                listEl.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-xs text-slate-400"><i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-300 block"></i>Belum ada data materi program tahunan (PROTA).</td></tr>`;
             }
 
             const statProtaCount = document.getElementById('stat-prota-count');
             const statJpCount = document.getElementById('stat-jp-count');
             if (statProtaCount) statProtaCount.textContent = count;
             if (statJpCount) statJpCount.textContent = `${totalJp} JP`;
+
+            // Atur ulang tombol hapus terpilih ke keadaan default
+            checkBulkSelectProtaStatus();
         }
 
         // ==========================================
@@ -2195,7 +2270,7 @@
                         <div class="flex items-start space-x-3 p-3 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 transition-colors shadow-sm md:col-span-2 xl:col-span-1">
                             <input type="checkbox" id="cb-tp-${idxPh}" name="promes-tp-choice" value="${phValue}" checked class="mt-1.5 w-4 h-4 rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-primary-300">
                             <div class="flex-1 flex flex-col space-y-2.5">
-                                <label for="cb-tp-${idxPh}" class="text-[11px] text-primary-700 dark:text-primary-400 cursor-pointer select-none leading-relaxed font-bold"><i class="fa-solid fa-file-pen mr-1.5 opacity-70"></i>${phValue}</label>
+                                <label for="cb-tp-${idxPh}" class="text-[11px] text-primary-800 dark:text-primary-300 cursor-pointer select-none leading-relaxed font-bold"><i class="fa-solid fa-file-pen mr-1.5 opacity-70"></i>${phValue}</label>
                                 <div class="flex items-center justify-between border-t border-primary-200 dark:border-primary-800 pt-2">
                                     <span class="text-[10px] text-primary-600 dark:text-primary-400 font-semibold uppercase tracking-wider">Alokasi:</span>
                                     <div class="flex items-center space-x-1.5">
@@ -2443,6 +2518,59 @@
             }
         }
 
+        // --- BULK ACTION UNTUK PROMES ---
+        function toggleSelectAllPromes(masterCheckbox) {
+            const rowCheckboxes = document.querySelectorAll('.promes-row-checkbox');
+            rowCheckboxes.forEach(cb => {
+                cb.checked = masterCheckbox.checked;
+            });
+            checkBulkSelectPromesStatus();
+        }
+
+        function checkBulkSelectPromesStatus() {
+            const total = document.querySelectorAll('.promes-row-checkbox').length;
+            const checked = document.querySelectorAll('.promes-row-checkbox:checked').length;
+            const masterCheckbox = document.getElementById('bulk-select-promes');
+            const deleteBtn = document.getElementById('btn-delete-promes-selected');
+
+            if (masterCheckbox) {
+                masterCheckbox.checked = (total > 0 && checked === total);
+                masterCheckbox.indeterminate = (checked > 0 && checked < total);
+            }
+
+            if (deleteBtn) {
+                if (checked > 0) {
+                    deleteBtn.classList.remove('hidden');
+                } else {
+                    deleteBtn.classList.add('hidden');
+                }
+            }
+        }
+
+        function deleteSelectedPromes() {
+            const checkedBoxes = document.querySelectorAll('.promes-row-checkbox:checked');
+            if (checkedBoxes.length === 0) return;
+
+            if (confirm(`Apakah Anda yakin ingin menghapus ${checkedBoxes.length} jadwal alokasi PROMES terpilih?`)) {
+                // Ambil semua index, urutkan dari terbesar ke terkecil agar aman dari bug pergeseran urutan array saat splice
+                const indices = Array.from(checkedBoxes).map(cb => parseInt(cb.getAttribute('data-index')));
+                indices.sort((a, b) => b - a);
+
+                indices.forEach(idx => {
+                    appData.promes.splice(idx, 1);
+                });
+
+                saveToLocalStorage();
+                renderPromes();
+                
+                const masterCheckbox = document.getElementById('bulk-select-promes');
+                if (masterCheckbox) masterCheckbox.checked = false;
+                checkBulkSelectPromesStatus();
+
+                showNotif("Hapus Massal", `${checkedBoxes.length} alokasi PROMES berhasil dibersihkan.`, "success");
+            }
+        }
+
         function renderPromes() {
             const listEl = document.getElementById('promes-list');
             if (!listEl) return;
@@ -2480,6 +2608,9 @@
 
                 listEl.innerHTML += `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                        <td class="px-4 py-3 text-center no-print">
+                            <input type="checkbox" class="promes-row-checkbox rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-slate-300" data-index="${index}" onchange="checkBulkSelectPromesStatus()">
+                        </td>
                         <td class="px-4 py-3 text-center font-bold text-slate-400 text-xs">${count}</td>
                         <td class="px-4 py-3">
                             <h5 class="font-bold text-sm text-slate-800 dark:text-white">${item.materi}</h5>
@@ -2506,7 +2637,7 @@
                                 <button onclick="editPromes(${index})" class="text-slate-500 hover:text-primary-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-primary-50 p-1.5 rounded" title="Edit Alokasi">
                                     <i class="fa-solid fa-pen text-xs"></i>
                                 </button>
-                                <button onclick="deletePromes(${index})" class="text-slate-500 hover:text-rose-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-rose-50 p-1.5 rounded" title="Hapus Alokasi">
+                                <button onclick="deletePromes(${index})" class="text-slate-500 hover:text-rose-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-rose p-1.5 rounded" title="Hapus Alokasi">
                                     <i class="fa-solid fa-trash-can text-xs"></i>
                                 </button>
                             </div>
@@ -2518,7 +2649,7 @@
             if (count === 0) {
                 listEl.innerHTML = `
                     <tr>
-                        <td colspan="6" class="px-4 py-12 text-center text-xs text-slate-400">
+                        <td colspan="7" class="px-4 py-12 text-center text-xs text-slate-400">
                             <i class="fa-solid fa-calendar-xmark text-3xl mb-2 text-slate-300 block"></i>
                             Belum ada alokasi TP yang didistribusikan ke program semester (PROMES).
                         </td>
@@ -2528,6 +2659,9 @@
 
             const statPromesCount = document.getElementById('stat-promes-count');
             if (statPromesCount) statPromesCount.textContent = count;
+
+            // Atur ulang tombol hapus terpilih ke keadaan default
+            checkBulkSelectPromesStatus();
         }
 
         // ==========================================
@@ -2535,27 +2669,21 @@
         // ==========================================
 
         function buildDocumentHeaderHTML(titleText, subtitleText, levelText, kelasText, semesterText) {
-            const logoDinasHTML = appData.school.logoDinas 
-                ? `<img src="${appData.school.logoDinas}" class="max-w-full max-h-full object-contain mx-auto" alt="Logo Dinas">` 
-                : `LOGO<br>DINAS`;
-
-            const logoSekolahHTML = appData.school.logo 
-                ? `<img src="${appData.school.logo}" class="max-w-full max-h-full object-contain mx-auto" alt="Logo Sekolah">` 
+            const logoHTML = appData.school.logo 
+                ? `<img src="${appData.school.logo}" class="max-w-full max-h-full object-contain mx-auto" alt="Logo">` 
                 : `LOGO<br>SEKOLAH`;
 
             return `
                 <div class="flex items-center justify-between border-b-4 border-double border-black pb-4 mb-4">
-                    <div class="w-20 h-20 shrink-0 bg-transparent flex items-center justify-center font-bold text-[10px] text-center uppercase overflow-hidden">
-                        ${logoDinasHTML}
+                    <div class="w-20 h-20 bg-transparent flex items-center justify-center font-bold text-[10px] text-center uppercase overflow-hidden">
+                        ${logoHTML}
                     </div>
                     <div class="text-center flex-1 mx-4">
                         <h2 class="font-extrabold text-lg uppercase tracking-wider">${appData.school.name || "NAMA SEKOLAH BELUM DIATUR"}</h2>
                         <p class="text-[11px] italic">Alamat: ${appData.school.address || "-"} | NPSN: ${appData.school.npsn || "-"}</p>
                         <h1 class="font-bold text-sm tracking-widest mt-1 uppercase">${titleText}</h1>
                     </div>
-                    <div class="w-20 h-20 shrink-0 bg-transparent flex items-center justify-center font-bold text-[10px] text-center uppercase overflow-hidden">
-                        ${logoSekolahHTML}
-                    </div>
+                    <div class="w-20 h-20 opacity-0">LOGO</div>
                 </div>
 
                 <div class="mb-4 border border-black p-3 bg-slate-50">
@@ -2626,7 +2754,6 @@
 
             let html = buildDocumentHeaderHTML("PROGRAM TAHUNAN (PROTA)", "", appData.school.level, kelasText, semesterText);
             
-            // Lakukan pemfilteran data PROTA agar data tercetak sinkron dengan layar kerja
             const filteredProta = appData.prota.filter(item => {
                 if (classFilter && item.kelas !== classFilter) return false;
                 if (semFilter && item.semester !== semFilter) return false;
@@ -2894,37 +3021,6 @@
 
             html += buildDocumentSignaturesHTML();
             return html;
-        }
-
-        function getNonEfektifTag(month, week, semester, keg) {
-            if (semester === "1") {
-                if (keg.stsMonthS1 === month && keg.stsWeekS1 === week) return "STS";
-                if (keg.sasMonthS1 === month && keg.sasWeekS1 === week) return "SAS";
-                if (keg.liburMonthS1 === month && week >= keg.liburStartS1 && week <= keg.liburEndS1) return "LBR";
-            } else {
-                if (keg.stsMonthS2 === month && keg.stsWeekS2 === week) return "STS";
-                if (keg.sasMonthS2 === month && keg.sasWeekS2 === week) return "SAS";
-                if (keg.liburMonthS2 === month && week >= keg.liburStartS2 && week <= keg.liburEndS2) return "LBR";
-            }
-
-            const customList = appData.kalender.customKegiatan || [];
-            const found = customList.find(k => k.semester === semester && k.bulan === month && k.minggu === week);
-            if (found) {
-                return found.singkatan.toUpperCase();
-            }
-
-            return null;
-        }
-
-        // Pengaturan CSS Ukuran Kertas Dinamis untuk Print
-        function setPrintPageSize(orientation) {
-            let style = document.getElementById('print-page-style');
-            if (!style) {
-                style = document.createElement('style');
-                style.id = 'print-page-style';
-                document.head.appendChild(style);
-            }
-            style.innerHTML = `@media print { @page { size: A4 ${orientation}; margin: 1cm; } }`;
         }
 
         function showProtaPreview() {
@@ -3264,26 +3360,59 @@
                     },
                     prota: [
                         { 
-                            kelas: "4", fase: "Fase B", semester: "1", jp_materi: 10, jp_ph: 2, jp: 12, 
+                            kelas: "4", 
+                            fase: "Fase B", 
+                            semester: "1", 
+                            jp_materi: 10,
+                            jp_ph: 2,
+                            jp: 12, 
                             cp: "Peserta didik memahami Pancasila sebagai pemersatu bangsa.", 
-                            tps: ["Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.", "Menceritakan sejarah perumusan Pancasila sebagai dasar negara."], 
-                            materi: "Pancasila Sebagai Nilai Kehidupan", bulan: "Juli" 
+                            tps: [
+                                "Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.",
+                                "Menceritakan sejarah perumusan Pancasila sebagai dasar negara."
+                            ], 
+                            materi: "Pancasila Sebagai Nilai Kehidupan", 
+                            bulan: "Juli" 
                         },
                         { 
-                            kelas: "4", fase: "Fase B", semester: "1", jp_materi: 14, jp_ph: 2, jp: 16, 
+                            kelas: "4", 
+                            fase: "Fase B", 
+                            semester: "1", 
+                            jp_materi: 14,
+                            jp_ph: 2,
+                            jp: 16, 
                             cp: "Peserta didik mengidentifikasi norma-norma di masyarakat.", 
-                            tps: ["Mematuhi norma kesopanan dan kesusilaan di sekolah.", "Mengidentifikasi sanksi dari pelanggaran aturan lalu lintas."], 
-                            materi: "Konstitusi dan Norma di Masyarakat", bulan: "Agustus" 
+                            tps: [
+                                "Mematuhi norma kesopanan dan kesusilaan di sekolah.",
+                                "Mengidentifikasi sanksi dari pelanggaran aturan lalu lintas."
+                            ], 
+                            materi: "Konstitusi dan Norma di Masyarakat", 
+                            bulan: "Agustus" 
                         }
                     ],
                     promes: [
                         { 
-                            materi: "Pancasila Sebagai Nilai Kehidupan", kelas: "4", jp: 5, bulan: "Juli", minggu: 3, semester: "1", 
-                            tps: [{ text: "Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.", jp: 5 }] 
+                            materi: "Pancasila Sebagai Nilai Kehidupan", 
+                            kelas: "4", 
+                            jp: 5, 
+                            bulan: "Juli", 
+                            minggu: 3, 
+                            semester: "1", 
+                            tps: [
+                                { text: "Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.", jp: 5 }
+                            ] 
                         },
                         { 
-                            materi: "Pancasila Sebagai Nilai Kehidupan", kelas: "4", jp: 7, bulan: "Juli", minggu: 4, semester: "1", 
-                            tps: [{ text: "Menceritakan sejarah perumusan Pancasila sebagai dasar negara.", jp: 5 }, { text: "Penilaian Harian / Ulangan Harian", jp: 2 }] 
+                            materi: "Pancasila Sebagai Nilai Kehidupan", 
+                            kelas: "4", 
+                            jp: 7, 
+                            bulan: "Juli", 
+                            minggu: 4, 
+                            semester: "1", 
+                            tps: [
+                                { text: "Menceritakan sejarah perumusan Pancasila sebagai dasar negara.", jp: 5 },
+                                { text: "Penilaian Harian / Ulangan Harian", jp: 2 }
+                            ] 
                         }
                     ]
                 };
@@ -3307,12 +3436,17 @@
                     },
                     kalender: {
                         ganjil: { jul: 3, agu: 4, sep: 4, okt: 4, nov: 4, des: 1 },
-                        genap: { jan: 4, feb: 4, mar: 3, apr: 3, mei: 4, jun: 2 },
+                        genap: { jan: 4, feb: 4, mar: 4, apr: 3, mei: 3, jun: 2 },
                         totalGanjil: { jul: 4, agu: 5, sep: 4, okt: 5, nov: 4, des: 4 },
                         totalGenap: { jan: 5, feb: 4, mar: 4, apr: 4, mei: 5, jun: 4 },
                         kegiatan: {
-                            stsMonthS1: "September", stsWeekS1: 3, sasMonthS1: "Desember", sasWeekS1: 1, liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
-                            stsMonthS2: "Maret", stsWeekS2: 2, sasMonthS2: "Juni", sasWeekS2: 1, liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
+                            stsMonthS1: "September", stsWeekS1: 3,
+                            sasMonthS1: "Desember", sasWeekS1: 1,
+                            liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
+
+                            stsMonthS2: "Maret", stsWeekS2: 2,
+                            sasMonthS2: "Juni", sasWeekS2: 1,
+                            liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
                         },
                         customKegiatan: [
                             { id: "c1", nama: "Pengenalan Ekstrakurikuler Mandiri", singkatan: "PEM", semester: "1", bulan: "Juli", minggu: 2 }
@@ -3323,7 +3457,7 @@
                             kelas: "7", fase: "Fase D", semester: "1", jp_materi: 13, jp_ph: 2, jp: 15, 
                             cp: "Peserta didik melakukan pengukuran aspek fisis terhadap objek.", 
                             tps: ["Merancang langkah metode ilmiah penelitian sains sederhana.", "Menggunakan alat ukur jangka sorong dan mikrometer sekrup dengan presisi.", "Menentukan besaran pokok dan besaran turunan pada pengukuran fisis."], 
-                            materi: "Sains and Pengukuran", bulan: "Juli" 
+                            materi: "Sains dan Pengukuran", bulan: "Juli" 
                         },
                         { 
                             kelas: "7", fase: "Fase D", semester: "1", jp_materi: 18, jp_ph: 2, jp: 20, 
