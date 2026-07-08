@@ -1071,7 +1071,7 @@
                         <div class="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-inner mt-2">
                             <div class="mb-4">
                                 <label class="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide flex items-center gap-2">
-                                    <div class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 flex items-center justify-center">
+                                    <div class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400 flex items-center justify-center">
                                         <i class="fa-solid fa-list-check"></i>
                                     </div>
                                     <span>Rincian TP & Ulangan Harian</span>
@@ -1274,7 +1274,8 @@
             school: {
                 name: "SD Negeri Merdeka Mandiri",
                 npsn: "10293847",
-                logo: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Tut_Wuri_Handayani_Logo.png",
+                logoDinas: "https://upload.wikimedia.org/wikipedia/commons/9/9e/Tut_Wuri_Handayani_Logo.png",
+                logo: "",
                 address: "Jl. Pendidikan No. 45, Bandar Lampung, Lampung",
                 tp: "2026/2027",
                 semester: "1",
@@ -2669,21 +2670,27 @@
         // ==========================================
 
         function buildDocumentHeaderHTML(titleText, subtitleText, levelText, kelasText, semesterText) {
-            const logoHTML = appData.school.logo 
-                ? `<img src="${appData.school.logo}" class="max-w-full max-h-full object-contain mx-auto" alt="Logo">` 
+            const logoDinasHTML = appData.school.logoDinas 
+                ? `<img src="${appData.school.logoDinas}" class="max-w-full max-h-full object-contain mx-auto" alt="Logo Dinas">` 
+                : `LOGO<br>DINAS`;
+
+            const logoSekolahHTML = appData.school.logo 
+                ? `<img src="${appData.school.logo}" class="max-w-full max-h-full object-contain mx-auto" alt="Logo Sekolah">` 
                 : `LOGO<br>SEKOLAH`;
 
             return `
                 <div class="flex items-center justify-between border-b-4 border-double border-black pb-4 mb-4">
-                    <div class="w-20 h-20 bg-transparent flex items-center justify-center font-bold text-[10px] text-center uppercase overflow-hidden">
-                        ${logoHTML}
+                    <div class="w-20 h-20 shrink-0 bg-transparent flex items-center justify-center font-bold text-[10px] text-center uppercase overflow-hidden">
+                        ${logoDinasHTML}
                     </div>
                     <div class="text-center flex-1 mx-4">
                         <h2 class="font-extrabold text-lg uppercase tracking-wider">${appData.school.name || "NAMA SEKOLAH BELUM DIATUR"}</h2>
                         <p class="text-[11px] italic">Alamat: ${appData.school.address || "-"} | NPSN: ${appData.school.npsn || "-"}</p>
                         <h1 class="font-bold text-sm tracking-widest mt-1 uppercase">${titleText}</h1>
                     </div>
-                    <div class="w-20 h-20 opacity-0">LOGO</div>
+                    <div class="w-20 h-20 shrink-0 bg-transparent flex items-center justify-center font-bold text-[10px] text-center uppercase overflow-hidden">
+                        ${logoSekolahHTML}
+                    </div>
                 </div>
 
                 <div class="mb-4 border border-black p-3 bg-slate-50">
@@ -3023,6 +3030,36 @@
             return html;
         }
 
+        function getNonEfektifTag(month, week, semester, keg) {
+            if (semester === "1") {
+                if (keg.stsMonthS1 === month && keg.stsWeekS1 === week) return "STS";
+                if (keg.sasMonthS1 === month && keg.sasWeekS1 === week) return "SAS";
+                if (keg.liburMonthS1 === month && week >= keg.liburStartS1 && week <= keg.liburEndS1) return "LBR";
+            } else {
+                if (keg.stsMonthS2 === month && keg.stsWeekS2 === week) return "STS";
+                if (keg.sasMonthS2 === month && keg.sasWeekS2 === week) return "SAS";
+                if (keg.liburMonthS2 === month && week >= keg.liburStartS2 && week <= keg.liburEndS2) return "LBR";
+            }
+
+            const customList = appData.kalender.customKegiatan || [];
+            const found = customList.find(k => k.semester === semester && k.bulan === month && k.minggu === week);
+            if (found) {
+                return found.singkatan.toUpperCase();
+            }
+
+            return null;
+        }
+
+        function setPrintPageSize(orientation) {
+            let style = document.getElementById('print-page-style');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'print-page-style';
+                document.head.appendChild(style);
+            }
+            style.innerHTML = `@media print { @page { size: A4 ${orientation}; margin: 1cm; } }`;
+        }
+
         function showProtaPreview() {
             setPrintPageSize('portrait');
             const previewTitle = document.getElementById('modal-preview-title');
@@ -3087,10 +3124,12 @@
         }
 
         function printPromes() {
+            setPrintPageSize('landscape');
             const printView = document.getElementById('print-view');
-            if (printView) printView.className = 'hidden print-area bg-white text-black font-sans text-[11px] w-full leading-relaxed';
-            const printHTML = buildPromesPrintHTML();
-            if (printView) printView.innerHTML = printHTML;
+            if (printView) {
+                printView.className = 'hidden print-area bg-white text-black font-sans text-[11px] w-full leading-relaxed';
+                printView.innerHTML = buildPromesPrintHTML();
+            }
             window.print();
         }
 
@@ -3360,59 +3399,26 @@
                     },
                     prota: [
                         { 
-                            kelas: "4", 
-                            fase: "Fase B", 
-                            semester: "1", 
-                            jp_materi: 10,
-                            jp_ph: 2,
-                            jp: 12, 
+                            kelas: "4", fase: "Fase B", semester: "1", jp_materi: 10, jp_ph: 2, jp: 12, 
                             cp: "Peserta didik memahami Pancasila sebagai pemersatu bangsa.", 
-                            tps: [
-                                "Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.",
-                                "Menceritakan sejarah perumusan Pancasila sebagai dasar negara."
-                            ], 
-                            materi: "Pancasila Sebagai Nilai Kehidupan", 
-                            bulan: "Juli" 
+                            tps: ["Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.", "Menceritakan sejarah perumusan Pancasila sebagai dasar negara."], 
+                            materi: "Pancasila Sebagai Nilai Kehidupan", bulan: "Juli" 
                         },
                         { 
-                            kelas: "4", 
-                            fase: "Fase B", 
-                            semester: "1", 
-                            jp_materi: 14,
-                            jp_ph: 2,
-                            jp: 16, 
+                            kelas: "4", fase: "Fase B", semester: "1", jp_materi: 14, jp_ph: 2, jp: 16, 
                             cp: "Peserta didik mengidentifikasi norma-norma di masyarakat.", 
-                            tps: [
-                                "Mematuhi norma kesopanan dan kesusilaan di sekolah.",
-                                "Mengidentifikasi sanksi dari pelanggaran aturan lalu lintas."
-                            ], 
-                            materi: "Konstitusi dan Norma di Masyarakat", 
-                            bulan: "Agustus" 
+                            tps: ["Mematuhi norma kesopanan dan kesusilaan di sekolah.", "Mengidentifikasi sanksi dari pelanggaran aturan lalu lintas."], 
+                            materi: "Konstitusi dan Norma di Masyarakat", bulan: "Agustus" 
                         }
                     ],
                     promes: [
                         { 
-                            materi: "Pancasila Sebagai Nilai Kehidupan", 
-                            kelas: "4", 
-                            jp: 5, 
-                            bulan: "Juli", 
-                            minggu: 3, 
-                            semester: "1", 
-                            tps: [
-                                { text: "Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.", jp: 5 }
-                            ] 
+                            materi: "Pancasila Sebagai Nilai Kehidupan", kelas: "4", jp: 5, bulan: "Juli", minggu: 3, semester: "1", 
+                            tps: [{ text: "Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.", jp: 5 }] 
                         },
                         { 
-                            materi: "Pancasila Sebagai Nilai Kehidupan", 
-                            kelas: "4", 
-                            jp: 7, 
-                            bulan: "Juli", 
-                            minggu: 4, 
-                            semester: "1", 
-                            tps: [
-                                { text: "Menceritakan sejarah perumusan Pancasila sebagai dasar negara.", jp: 5 },
-                                { text: "Penilaian Harian / Ulangan Harian", jp: 2 }
-                            ] 
+                            materi: "Pancasila Sebagai Nilai Kehidupan", kelas: "4", jp: 7, bulan: "Juli", minggu: 4, semester: "1", 
+                            tps: [{ text: "Menceritakan sejarah perumusan Pancasila sebagai dasar negara.", jp: 5 }, { text: "Penilaian Harian / Ulangan Harian", jp: 2 }] 
                         }
                     ]
                 };
@@ -3440,13 +3446,8 @@
                         totalGanjil: { jul: 4, agu: 5, sep: 4, okt: 5, nov: 4, des: 4 },
                         totalGenap: { jan: 5, feb: 4, mar: 4, apr: 4, mei: 5, jun: 4 },
                         kegiatan: {
-                            stsMonthS1: "September", stsWeekS1: 3,
-                            sasMonthS1: "Desember", sasWeekS1: 1,
-                            liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
-
-                            stsMonthS2: "Maret", stsWeekS2: 2,
-                            sasMonthS2: "Juni", sasWeekS2: 1,
-                            liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
+                            stsMonthS1: "September", stsWeekS1: 3, sasMonthS1: "Desember", sasWeekS1: 1, liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
+                            stsMonthS2: "Maret", stsWeekS2: 2, sasMonthS2: "Juni", sasWeekS2: 1, liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
                         },
                         customKegiatan: [
                             { id: "c1", nama: "Pengenalan Ekstrakurikuler Mandiri", singkatan: "PEM", semester: "1", bulan: "Juli", minggu: 2 }
