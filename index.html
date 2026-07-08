@@ -47,6 +47,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- XLSX library for Excel Import/Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- html2pdf library for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Custom Styles for Scrollbars and Print -->
     <style>
         /* Custom scrollbar */
@@ -66,11 +68,6 @@
         }
         /* Custom styles for printing */
         @media print {
-            * {
-                -webkit-print-color-adjust: exact !important;
-                color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
             body {
                 background: white !important;
                 color: black !important;
@@ -2399,12 +2396,22 @@
             const safeSetVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
 
             safeSetVal('promes-index-edit', index);
+            
+            // Perbaikan Menu Edit: Aktifkan kembali dropdown dan atur nilainya agar sinkron
+            const promesSelectMateri = document.getElementById('promes-select-materi');
+            if (promesSelectMateri) {
+                promesSelectMateri.disabled = false; // Memastikan dropdown bisa diklik oleh guru
+                const protaIdx = appData.prota.findIndex(p => p.materi === data.materi);
+                if (protaIdx !== -1) {
+                    promesSelectMateri.value = protaIdx;
+                } else {
+                    promesSelectMateri.value = "";
+                }
+            }
+
             safeSetVal('promes-bulan', data.bulan);
             adjustWeekOptions();
             safeSetVal('promes-minggu', data.minggu);
-
-            const promesSelectMateri = document.getElementById('promes-select-materi');
-            if (promesSelectMateri) promesSelectMateri.disabled = true;
 
             const checkboxContainer = document.getElementById('promes-tps-checkbox-container');
             if (checkboxContainer) {
@@ -2452,7 +2459,9 @@
                     protaItem.tps.forEach((tpText, idx) => {
                         const existingTpObj = data.tps ? data.tps.find(t => t.text === tpText) : null;
                         const isChecked = existingTpObj ? "checked" : "";
-                        const tpJp = existingTpObj ? existingTpObj.jp : 2;
+                        const validJpMateri = protaItem.jp_materi !== undefined ? protaItem.jp_materi : protaItem.jp;
+                        const defaultJp = Math.max(1, Math.floor(validJpMateri / protaItem.tps.length));
+                        const tpJp = existingTpObj ? existingTpObj.jp : defaultJp;
                         renderCb(tpText, idx, isChecked, tpJp);
                     });
 
@@ -3108,6 +3117,11 @@
             const previewModal = document.getElementById('preview-modal');
             if (previewModal) previewModal.classList.add('hidden');
         }
+
+        // Memastikan fungsi terdaftar secara global
+        window.setPrintPageSize = setPrintPageSize;
+        window.showProtaPreview = showProtaPreview;
+        window.showPromesPreview = showPromesPreview;
 
         function triggerActualPrint() {
             window.print();
