@@ -118,7 +118,7 @@
         <h1 class="text-slate-800 dark:text-white text-3xl font-extrabold tracking-widest uppercase">PRO-ADMIN</h1>
         <p class="text-slate-500 dark:text-slate-400 text-sm mt-3 animate-pulse font-medium tracking-wide">Memuat Ruang Kerja Anda...</p>
         <div class="w-48 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full mt-6 overflow-hidden relative">
-            <div class="absolute top-0 left-0 h-full bg-primary-50 w-1/2 animate-[pulse_1s_ease-in-out_infinite]"></div>
+            <div class="absolute top-0 left-0 h-full bg-primary-500 w-1/2 animate-[pulse_1s_ease-in-out_infinite]"></div>
         </div>
     </div>
 
@@ -992,17 +992,24 @@
                             <!-- Input Beberapa Tujuan Pembelajaran (TP) -->
                             <div class="space-y-2 md:col-span-2 lg:col-span-5">
                                 <label class="text-xs font-semibold text-slate-500 dark:text-slate-400">Tujuan Pembelajaran (TP) - Tambahkan Beberapa</label>
-                                <div class="flex space-x-2">
-                                    <input type="text" id="prota-tp-input" class="flex-1 border border-slate-200 dark:border-slate-700 bg-transparent rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Ketik TP lalu klik tombol tambah">
-                                    <button type="button" onclick="addTPToTempList()" class="bg-primary-600 hover:bg-primary-700 text-white px-3 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center">
+                                <div class="flex items-center space-x-2">
+                                    <input type="text" id="prota-tp-input" class="flex-1 border border-slate-200 dark:border-slate-700 bg-transparent rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Ketik TP lalu isi JP-nya...">
+                                    <div class="relative w-24 shrink-0">
+                                        <input type="number" id="prota-tp-jp-input" min="1" class="w-full border border-slate-200 dark:border-slate-700 bg-transparent rounded-lg pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 text-center" placeholder="JP">
+                                        <span class="absolute right-3 top-2.5 text-xs text-slate-400 font-bold">JP</span>
+                                    </div>
+                                    <button type="button" onclick="addTPToTempList()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center shrink-0">
                                         <i class="fa-solid fa-plus"></i>
                                     </button>
                                 </div>
                                 <!-- List Penampung TP Sementara -->
-                                <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
-                                    <p class="text-[10px] text-slate-400 font-semibold uppercase mb-1">Daftar TP yang akan disimpan:</p>
-                                    <ul id="prota-temp-tp-list" class="space-y-1 max-h-24 overflow-y-auto">
-                                        <li class="text-xs text-slate-400 italic">Belum ada TP. Masukkan teks di atas.</li>
+                                <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700 mt-2">
+                                    <div class="flex justify-between items-center mb-1 border-b border-slate-200 dark:border-slate-700 pb-1">
+                                        <p class="text-[10px] text-slate-400 font-semibold uppercase">Daftar TP yang akan disimpan:</p>
+                                        <p class="text-[10px] text-primary-500 font-bold" id="prota-temp-tp-total">Total: 0 JP</p>
+                                    </div>
+                                    <ul id="prota-temp-tp-list" class="space-y-1.5 max-h-32 overflow-y-auto">
+                                        <li class="text-xs text-slate-400 italic">Belum ada TP. Masukkan teks dan JP di atas.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -1262,7 +1269,6 @@
         <!-- Built dynamically on-demand -->
     </div>
 
-
     <!-- JAVASCRIPT APLIKASI CORE LOGIC -->
     <script>
         // Temporary penampung TP untuk form PROTA sebelum disimpan
@@ -1292,12 +1298,10 @@
                 genap: { jan: 4, feb: 4, mar: 3, apr: 3, mei: 4, jun: 2 },
                 totalGanjil: { jul: 4, agu: 5, sep: 4, okt: 5, nov: 4, des: 4 },
                 totalGenap: { jan: 5, feb: 4, mar: 4, apr: 4, mei: 5, jun: 4 },
-                // Config Tambahan Non-Efektif v3.1 & v3.2 Kustom
                 kegiatan: {
                     stsMonthS1: "September", stsWeekS1: 3,
                     sasMonthS1: "Desember", sasWeekS1: 1,
                     liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
-
                     stsMonthS2: "Maret", stsWeekS2: 2,
                     sasMonthS2: "Juni", sasWeekS2: 1,
                     liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
@@ -1318,9 +1322,8 @@
                     jp: 12, 
                     cp: "Peserta didik mampu memahami nilai-nilai Pancasila di lingkungan keluarga dan sekolah secara komprehensif.", 
                     tps: [
-                        "Menjelaskan arti penting sila kesatu Pancasila dalam kehidupan sehari-hari.",
-                        "Mengidentifikasi contoh pengamalan sila kedua Pancasila di rumah dan sekolah.",
-                        "Mendemonstrasikan sikap menghormati perbedaan agama antar teman kelas."
+                        { text: "Menjelaskan arti penting sila kesatu Pancasila dalam kehidupan sehari-hari.", jp: 5 },
+                        { text: "Mengidentifikasi contoh pengamalan sila kedua Pancasila di rumah dan sekolah.", jp: 5 }
                     ], 
                     materi: "Pancasila Sebagai Nilai Kehidupan", 
                     bulan: "Juli" 
@@ -1334,9 +1337,8 @@
                     jp: 16, 
                     cp: "Peserta didik mampu mengidentifikasi aturan di keluarga, sekolah, dan lingkungan sekitar.", 
                     tps: [
-                        "Mengidentifikasi norma aturan tidak tertulis di lingkungan keluarga.",
-                        "Melaksanakan tata tertib dan norma tertulis resmi di lingkungan sekolah.",
-                        "Menjelaskan akibat dari ketidakpatuhan terhadap aturan tata tertib."
+                        { text: "Mengidentifikasi norma aturan tidak tertulis di lingkungan keluarga.", jp: 7 },
+                        { text: "Melaksanakan tata tertib dan norma tertulis resmi di lingkungan sekolah.", jp: 7 }
                     ], 
                     materi: "Konstitusi dan Norma di Masyarakat", 
                     bulan: "Agustus - September" 
@@ -1351,7 +1353,7 @@
                     kelas: "4",
                     semester: "1",
                     alokasi: [
-                        { bulan: "Juli", minggu: 3, jp: 4 }
+                        { bulan: "Juli", minggu: 3, jp: 5 }
                     ]
                 },
                 {
@@ -1361,8 +1363,7 @@
                     kelas: "4",
                     semester: "1",
                     alokasi: [
-                        { bulan: "Juli", minggu: 4, jp: 2 },
-                        { bulan: "Agustus", minggu: 1, jp: 2 } // Contoh tersebar 2 minggu
+                        { bulan: "Juli", minggu: 4, jp: 5 }
                     ]
                 },
                 {
@@ -1372,7 +1373,7 @@
                     kelas: "4",
                     semester: "1",
                     alokasi: [
-                        { bulan: "Agustus", minggu: 2, jp: 2 }
+                        { bulan: "Agustus", minggu: 1, jp: 2 }
                     ]
                 }
             ]
@@ -1401,7 +1402,6 @@
             initializeUI();
             switchTab('dashboard');
             
-            // Logika Splash Screen (Hilang setelah 1.5 detik)
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 if (splash) {
@@ -1410,9 +1410,9 @@
                     setTimeout(() => {
                         splash.classList.add('hidden');
                         showNotif("Berhasil Memuat", "Aplikasi v3.5 siap digunakan.", "success");
-                    }, 1000); // Menunggu transisi opacity selesai
+                    }, 1000); 
                 }
-            }, 1500); // Lama waktu splash screen tayang
+            }, 1500); 
         };
 
         function saveToLocalStorage() {
@@ -1432,7 +1432,6 @@
                     if (!parsedData.kalender.totalGanjil) parsedData.kalender.totalGanjil = { jul: 4, agu: 5, sep: 4, okt: 5, nov: 4, des: 4 };
                     if (!parsedData.kalender.totalGenap) parsedData.kalender.totalGenap = { jan: 5, feb: 4, mar: 4, apr: 4, mei: 5, jun: 4 };
                     
-                    // SCRIPT MIGRASI STRUKTUR PROMES LAMA (v3.4) ke BARU (v3.5)
                     if (parsedData.promes && parsedData.promes.length > 0) {
                         if (parsedData.promes[0].tps !== undefined) {
                             let newPromes = [];
@@ -1462,6 +1461,11 @@
                         parsedData.prota = parsedData.prota.map(p => {
                             if(p.jp_materi === undefined) p.jp_materi = p.jp;
                             if(p.jp_ph === undefined) p.jp_ph = 0;
+                            // Migrate array string into array objects
+                            if(p.tps && p.tps.length > 0 && typeof p.tps[0] === 'string') {
+                                const dividedJp = Math.max(1, Math.floor(p.jp_materi / p.tps.length));
+                                p.tps = p.tps.map(t => ({ text: t, jp: dividedJp }));
+                            }
                             return p;
                         });
                     }
@@ -1513,7 +1517,6 @@
             }, 3000);
         }
 
-        // Fitur Layar Penuh (Full Screen)
         function toggleFullScreen() {
             const btnIcon = document.getElementById('btn-fullscreen');
             if (!document.fullscreenElement) {
@@ -1697,6 +1700,7 @@
             const headerTitle = document.getElementById('header-title');
             if (headerTitle) headerTitle.textContent = titles[tabId] || "Portal Administrasi";
 
+            // Pastikan jika tab dipindah, filter promes diupdate.
             if (tabId === 'promes') renderPromes(); 
             if (tabId === 'dashboard') renderCharts();
         }
@@ -1874,11 +1878,39 @@
 
         function addTPToTempList() {
             const inputEl = document.getElementById('prota-tp-input');
-            if (!inputEl) return;
+            const jpEl = document.getElementById('prota-tp-jp-input');
+            const maxJpEl = document.getElementById('prota-jp');
+
+            if (!inputEl || !jpEl || !maxJpEl) return;
+
             const tpText = inputEl.value.trim();
-            if (tpText === "") return;
-            tempProtaTPs.push(tpText);
+            const tpJp = parseInt(jpEl.value) || 0;
+            const maxJp = parseInt(maxJpEl.value) || 0;
+
+            if (maxJp === 0) {
+                showNotif("Error", "Isi 'JP Materi Esensial' terlebih dahulu sebelum menambah TP!", "error");
+                return;
+            }
+
+            if (tpText === "") {
+                showNotif("Error", "Teks Tujuan Pembelajaran tidak boleh kosong!", "error");
+                return;
+            }
+
+            if (tpJp <= 0) {
+                showNotif("Error", "JP untuk TP harus lebih dari 0!", "error");
+                return;
+            }
+
+            const currentTotalJp = tempProtaTPs.reduce((sum, item) => sum + item.jp, 0);
+            if (currentTotalJp + tpJp > maxJp) {
+                showNotif("Error", `Total JP TP (${currentTotalJp + tpJp}) melebihi alokasi JP Materi Esensial (${maxJp})!`, "error");
+                return;
+            }
+
+            tempProtaTPs.push({ text: tpText, jp: tpJp });
             inputEl.value = "";
+            jpEl.value = "";
             renderTempTPList();
         }
 
@@ -1889,20 +1921,35 @@
 
         function renderTempTPList() {
             const listEl = document.getElementById('prota-temp-tp-list');
+            const totalEl = document.getElementById('prota-temp-tp-total');
             if (!listEl) return;
+            
+            let currentTotal = 0;
             listEl.innerHTML = "";
+            
             if (tempProtaTPs.length === 0) {
-                listEl.innerHTML = `<li class="text-xs text-slate-400 italic">Belum ada TP. Masukkan teks di atas.</li>`;
-                return;
+                listEl.innerHTML = `<li class="text-xs text-slate-400 italic">Belum ada TP. Masukkan teks dan JP di atas.</li>`;
+            } else {
+                tempProtaTPs.forEach((tp, idx) => {
+                    const tpText = typeof tp === 'string' ? tp : tp.text;
+                    const tpJp = typeof tp === 'string' ? 0 : tp.jp;
+                    currentTotal += tpJp;
+                    listEl.innerHTML += `
+                        <li class="text-xs text-slate-600 dark:text-slate-300 flex justify-between items-center bg-white dark:bg-slate-800 p-2 rounded border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <span class="truncate max-w-[80%] flex items-center gap-2">
+                                <span class="font-bold text-slate-400 w-4">${idx + 1}.</span> 
+                                <span>${tpText}</span>
+                            </span>
+                            <div class="flex items-center gap-3">
+                                <span class="font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-2 py-0.5 rounded text-[10px] border border-primary-100 dark:border-primary-800">${tpJp} JP</span>
+                                <button type="button" onclick="removeTPFromTempList(${idx})" class="text-rose-500 hover:text-rose-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </li>
+                    `;
+                });
             }
-            tempProtaTPs.forEach((tp, idx) => {
-                listEl.innerHTML += `
-                    <li class="text-xs text-slate-600 dark:text-slate-300 flex justify-between items-center bg-slate-100 dark:bg-slate-800 p-1.5 rounded">
-                        <span class="truncate max-w-[85%]">${idx + 1}. ${tp}</span>
-                        <button type="button" onclick="removeTPFromTempList(${idx})" class="text-rose-500 hover:text-rose-700 p-0.5"><i class="fa-solid fa-circle-minus"></i></button>
-                    </li>
-                `;
-            });
+            
+            if (totalEl) totalEl.textContent = `Total: ${currentTotal} JP`;
         }
 
         function saveProta() {
@@ -1969,7 +2016,7 @@
             safeSetVal('prota-bulan-start', bulanParts[0]);
             safeSetVal('prota-bulan-end', bulanParts.length > 1 ? bulanParts[1] : bulanParts[0]);
 
-            tempProtaTPs = data.tps ? [...data.tps] : [];
+            tempProtaTPs = data.tps ? JSON.parse(JSON.stringify(data.tps)) : [];
             renderTempTPList();
 
             const pTitle = document.getElementById('prota-form-title');
@@ -2088,15 +2135,19 @@
                 if (classFilter && item.kelas !== classFilter) return;
                 if (semFilter && item.semester !== semFilter) return;
                 
-                const tpsText = item.tps ? item.tps.join(" ").toLowerCase() : "";
-                if (searchVal && !item.materi.toLowerCase().includes(searchVal) && !tpsText.includes(searchVal)) return;
+                const tpsTextArray = item.tps ? item.tps.map(t => typeof t === 'string' ? t : t.text).join(" ").toLowerCase() : "";
+                if (searchVal && !item.materi.toLowerCase().includes(searchVal) && !tpsTextArray.includes(searchVal)) return;
 
                 count++;
                 totalJp += item.jp;
 
                 let tpListHTML = `<ol class="list-decimal pl-4 mt-2 text-xs space-y-1 text-slate-600 dark:text-slate-400">`;
                 if (item.tps && item.tps.length > 0) {
-                    item.tps.forEach(tp => { tpListHTML += `<li>${tp}</li>`; });
+                    item.tps.forEach(tp => {
+                        let text = typeof tp === 'string' ? tp : tp.text;
+                        let jp = typeof tp === 'string' ? '' : ` <strong class="text-primary-500 font-bold ml-1">(${tp.jp} JP)</strong>`;
+                        tpListHTML += `<li>${text}${jp}</li>`;
+                    });
                 } else {
                     tpListHTML += `<li class="italic text-slate-400">Belum ada TP yang dimasukkan</li>`;
                 }
@@ -2135,7 +2186,7 @@
                                 <button onclick="editProta(${index})" class="text-slate-500 hover:text-primary-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-primary-50 p-1.5 rounded" title="Edit Data">
                                     <i class="fa-solid fa-pen text-xs"></i>
                                 </button>
-                                <button onclick="deleteProta(${index})" class="text-slate-500 hover:text-rose-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-rose p-1.5 rounded" title="Hapus Data">
+                                <button onclick="deleteProta(${index})" class="text-slate-500 hover:text-rose-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-rose-50 p-1.5 rounded" title="Hapus Data">
                                     <i class="fa-solid fa-trash-can text-xs"></i>
                                 </button>
                             </div>
@@ -2153,7 +2204,6 @@
             if (statProtaCount) statProtaCount.textContent = count;
             if (statJpCount) statJpCount.textContent = `${totalJp} JP`;
 
-            // Atur ulang tombol hapus terpilih ke keadaan default
             checkBulkSelectProtaStatus();
         }
 
@@ -2196,7 +2246,6 @@
                     selTp.value = data.tp;
                 }
                 
-                // Deep copy data alokasi yang mau diedit
                 currentPromesAlokasi = JSON.parse(JSON.stringify(data.alokasi));
             } else {
                 document.getElementById('promes-modal-title').textContent = "Distribusi Jadwal TP Baru";
@@ -2221,14 +2270,15 @@
                 const p = appData.prota[protaIdx];
                 if (p.tps && p.tps.length > 0) {
                     p.tps.forEach(tp => {
-                        selTp.innerHTML += `<option value="${tp}">${tp}</option>`;
+                        let tText = typeof tp === 'string' ? tp : tp.text;
+                        let tJp = typeof tp === 'string' ? '' : ` (${tp.jp} JP)`;
+                        selTp.innerHTML += `<option value="${tText}">${tText}${tJp}</option>`;
                     });
                 }
                 if (p.jp_ph > 0) {
                     selTp.innerHTML += `<option value="Penilaian Harian / Ulangan Harian" class="font-bold text-primary-600">Penilaian Harian / Ulangan Harian (${p.jp_ph} JP)</option>`;
                 }
                 
-                // Hanya atur ulang bulan pertama kalau mode tambah baru
                 if (document.getElementById('promes-modal-index').value === "") {
                     const defaultBulan = p.bulan ? p.bulan.split(' - ')[0] : getFirstMonthOfSemester();
                     currentPromesAlokasi = [{ bulan: defaultBulan, minggu: 1, jp: 2 }];
@@ -2282,7 +2332,6 @@
                 `;
             });
 
-            // Update Label Total
             const labelTotal = document.getElementById('promes-modal-total-jp');
             if (labelTotal) labelTotal.textContent = `Total Alokasi: ${totalDistribusi} JP`;
         }
@@ -2307,7 +2356,7 @@
 
         function updateAlokasiBulan(idx, val) {
             currentPromesAlokasi[idx].bulan = val;
-            currentPromesAlokasi[idx].minggu = 1; // reset week when month changes
+            currentPromesAlokasi[idx].minggu = 1; 
             renderPromesAlokasiRows();
         }
 
@@ -2318,7 +2367,7 @@
 
         function updateAlokasiJP(idx, val) {
             currentPromesAlokasi[idx].jp = parseInt(val) || 0;
-            renderPromesAlokasiRows(); // Memperbarui kalkulasi total di bawah modal
+            renderPromesAlokasiRows();
         }
 
         function savePromesModal() {
@@ -2331,7 +2380,6 @@
                 showNotif("Error", "Materi Pokok dan TP wajib dipilih!", "error"); return;
             }
 
-            // Validasi apakah minggu yang sama di-input dua kali
             const uniqueCheck = new Set();
             let isDuplicate = false;
             currentPromesAlokasi.forEach(a => {
@@ -2366,6 +2414,60 @@
             saveToLocalStorage();
             closePromesModal();
             renderPromes();
+        }
+
+        function copyProtaToPromesAll() {
+            const currentSemester = appData.school.semester;
+            const protaFilter = appData.prota.filter(p => p.semester === currentSemester);
+
+            if (protaFilter.length === 0) {
+                showNotif("Peringatan", `Tidak ditemukan data materi PROTA pada Semester ${currentSemester}. Silakan tambah PROTA terlebih dahulu.`, "error");
+                return;
+            }
+
+            if (confirm(`Salin ${protaFilter.length} materi PROTA semester ini secara otomatis ke dalam jadwal PROMES? (Fitur ini akan menyusun setiap TP ke Minggu 1 secara default)`)) {
+                protaFilter.forEach(p => {
+                    const validJpMateri = p.jp_materi !== undefined ? p.jp_materi : p.jp;
+                    const jpPerTp = p.tps && p.tps.length > 0 ? Math.max(1, Math.floor(validJpMateri / p.tps.length)) : 0;
+                    const defaultBulan = p.bulan ? p.bulan.split(' - ')[0] : getFirstMonthOfSemester();
+
+                    if (p.tps) {
+                        p.tps.forEach(tp => {
+                            let tpText = typeof tp === 'string' ? tp : tp.text;
+                            let tpJp = typeof tp === 'string' ? jpPerTp : tp.jp;
+                            const isExist = appData.promes.some(pr => pr.materi === p.materi && pr.tp === tpText && pr.semester === currentSemester);
+                            if (!isExist) {
+                                appData.promes.push({
+                                    id: 'cpa-' + Math.random().toString(36).substr(2, 9),
+                                    materi: p.materi,
+                                    tp: tpText,
+                                    kelas: p.kelas,
+                                    semester: currentSemester,
+                                    alokasi: [{ bulan: defaultBulan, minggu: 1, jp: tpJp }]
+                                });
+                            }
+                        });
+                    }
+                    if (p.jp_ph > 0) {
+                        const phText = "Penilaian Harian / Ulangan Harian";
+                        const isExist = appData.promes.some(pr => pr.materi === p.materi && pr.tp === phText && pr.semester === currentSemester);
+                        if (!isExist) {
+                            appData.promes.push({
+                                id: 'cpa-' + Math.random().toString(36).substr(2, 9),
+                                materi: p.materi,
+                                tp: phText,
+                                kelas: p.kelas,
+                                semester: currentSemester,
+                                alokasi: [{ bulan: defaultBulan, minggu: 2, jp: p.jp_ph }]
+                            });
+                        }
+                    }
+                });
+
+                saveToLocalStorage();
+                renderPromes();
+                showNotif("Duplikasi Berhasil", "Materi PROTA telah direplika ke PROMES sebagai draf.", "success");
+            }
         }
 
         // --- BULK ACTION UNTUK PROMES ---
@@ -2491,7 +2593,7 @@
                                 <button onclick="openPromesModal(${actualIndex})" class="text-slate-500 hover:text-primary-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-primary-50 p-1.5 rounded" title="Edit Alokasi">
                                     <i class="fa-solid fa-pen text-xs"></i>
                                 </button>
-                                <button onclick="deletePromes(${actualIndex})" class="text-slate-500 hover:text-rose-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-rose p-1.5 rounded" title="Hapus Alokasi">
+                                <button onclick="deletePromes(${actualIndex})" class="text-slate-500 hover:text-rose-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-rose-50 p-1.5 rounded" title="Hapus Alokasi">
                                     <i class="fa-solid fa-trash-can text-xs"></i>
                                 </button>
                             </div>
@@ -2614,8 +2716,8 @@
                 if (classFilter && item.kelas !== classFilter) return false;
                 if (semFilter && item.semester !== semFilter) return false;
                 
-                const tpsText = item.tps ? item.tps.join(" ").toLowerCase() : "";
-                if (searchVal && !item.materi.toLowerCase().includes(searchVal) && !tpsText.includes(searchVal)) return false;
+                const tpsTextArray = item.tps ? item.tps.map(t => typeof t === 'string' ? t : t.text).join(" ").toLowerCase() : "";
+                if (searchVal && !item.materi.toLowerCase().includes(searchVal) && !tpsTextArray.includes(searchVal)) return false;
                 return true;
             });
 
@@ -2655,7 +2757,9 @@
                     let tpListHTML = `<ol class="list-decimal pl-4 mt-1 text-[11px] space-y-1 text-gray-700">`;
                     if (item.tps && item.tps.length > 0) {
                         item.tps.forEach(tp => {
-                            tpListHTML += `<li>${tp}</li>`;
+                            let text = typeof tp === 'string' ? tp : tp.text;
+                            let jp = typeof tp === 'string' ? '' : ` (${tp.jp} JP)`;
+                            tpListHTML += `<li>${text}${jp}</li>`;
                         });
                     } else {
                         tpListHTML += `<li>-</li>`;
@@ -3108,7 +3212,7 @@
                     "Kelas": "Kelas " + p.kelas,
                     "Semester": "Semester " + p.semester,
                     "Materi Pokok": p.materi,
-                    "Tujuan Pembelajaran (TP)": p.tps ? p.tps.join(" | ") : "",
+                    "Tujuan Pembelajaran (TP)": p.tps ? p.tps.map(t => typeof t === 'string' ? t : `${t.text} (${t.jp} JP)`).join(" | ") : "",
                     "Alokasi JP Materi": p.jp_materi,
                     "Alokasi JP Ulangan": p.jp_ph,
                     "Alokasi JP Total": p.jp,
@@ -3223,13 +3327,19 @@
                         { 
                             kelas: "4", fase: "Fase B", semester: "1", jp_materi: 10, jp_ph: 2, jp: 12, 
                             cp: "Peserta didik memahami Pancasila sebagai pemersatu bangsa.", 
-                            tps: ["Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.", "Menceritakan sejarah perumusan Pancasila sebagai dasar negara."], 
+                            tps: [
+                                {text: "Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.", jp: 5}, 
+                                {text: "Menceritakan sejarah perumusan Pancasila sebagai dasar negara.", jp: 5}
+                            ], 
                             materi: "Pancasila Sebagai Nilai Kehidupan", bulan: "Juli" 
                         },
                         { 
                             kelas: "4", fase: "Fase B", semester: "1", jp_materi: 14, jp_ph: 2, jp: 16, 
                             cp: "Peserta didik mengidentifikasi norma-norma di masyarakat.", 
-                            tps: ["Mematuhi norma kesopanan dan kesusilaan di sekolah.", "Mengidentifikasi sanksi dari pelanggaran aturan lalu lintas."], 
+                            tps: [
+                                {text: "Mematuhi norma kesopanan dan kesusilaan di sekolah.", jp: 7}, 
+                                {text: "Mengidentifikasi sanksi dari pelanggaran aturan lalu lintas.", jp: 7}
+                            ], 
                             materi: "Konstitusi dan Norma di Masyarakat", bulan: "Agustus - September" 
                         }
                     ],
@@ -3272,12 +3382,8 @@
                         totalGanjil: { jul: 4, agu: 5, sep: 4, okt: 5, nov: 4, des: 4 },
                         totalGenap: { jan: 5, feb: 4, mar: 4, apr: 4, mei: 5, jun: 4 },
                         kegiatan: {
-                            stsMonthS1: "September", stsWeekS1: 3,
-                            sasMonthS1: "Desember", sasWeekS1: 1,
-                            liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
-                            stsMonthS2: "Maret", stsWeekS2: 2,
-                            sasMonthS2: "Juni", sasMonthS2: 1,
-                            liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
+                            stsMonthS1: "September", stsWeekS1: 3, sasMonthS1: "Desember", sasWeekS1: 1, liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
+                            stsMonthS2: "Maret", stsWeekS2: 2, sasMonthS2: "Juni", sasWeekS2: 1, liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
                         },
                         customKegiatan: [
                             { id: "c1", nama: "Pengenalan Ekstrakurikuler Mandiri", singkatan: "PEM", semester: "1", bulan: "Juli", minggu: 2 }
@@ -3287,13 +3393,20 @@
                         { 
                             kelas: "7", fase: "Fase D", semester: "1", jp_materi: 13, jp_ph: 2, jp: 15, 
                             cp: "Peserta didik melakukan pengukuran aspek fisis terhadap objek.", 
-                            tps: ["Merancang langkah metode ilmiah penelitian sains sederhana.", "Menggunakan alat ukur jangka sorong dan mikrometer sekrup dengan presisi.", "Menentukan besaran pokok dan besaran turunan pada pengukuran fisis."], 
+                            tps: [
+                                {text: "Merancang langkah metode ilmiah penelitian sains sederhana.", jp: 5},
+                                {text: "Menggunakan alat ukur jangka sorong dan mikrometer sekrup dengan presisi.", jp: 4},
+                                {text: "Menentukan besaran pokok dan besaran turunan pada pengukuran fisis.", jp: 4}
+                            ], 
                             materi: "Sains dan Pengukuran", bulan: "Juli" 
                         },
                         { 
                             kelas: "7", fase: "Fase D", semester: "1", jp_materi: 18, jp_ph: 2, jp: 20, 
                             cp: "Peserta didik mengidentifikasi sifat dan karakteristik zat.", 
-                            tps: ["Membedakan sifat partikel zat padat, cair, dan gas.", "Menganalisis fenomena perubahan fisika dan kimia di lingkungan."], 
+                            tps: [
+                                {text: "Membedakan sifat partikel zat padat, cair, dan gas.", jp: 9},
+                                {text: "Menganalisis fenomena perubahan fisika dan kimia di lingkungan.", jp: 9}
+                            ], 
                             materi: "Klasifikasi Zat dan Perubahannya", bulan: "Agustus" 
                         }
                     ],
@@ -3312,7 +3425,7 @@
                         },
                         { 
                             id: "dp7", materi: "Sains dan Pengukuran", tp: "Penilaian Harian / Ulangan Harian", kelas: "7", semester: "1", 
-                            alokasi: [{ bulan: "Juli", minggu: 3, jp: 2 }] 
+                            alokasi: [{ bulan: "Juli", minggu: 4, jp: 2 }] 
                         }
                     ]
                 };
@@ -3351,13 +3464,19 @@
                         { 
                             kelas: "11", fase: "Fase F", semester: "1", jp_materi: 14, jp_ph: 2, jp: 16, 
                             cp: "Peserta didik menerapkan vektor dalam memecahkan persoalan fisis.", 
-                            tps: ["Menentukan resultan vektor dengan metode grafis (poligon dan jajar genjang).", "Menghitung komponen vektor fisis pada koordinat kartesius 2 dimensi."], 
+                            tps: [
+                                {text: "Menentukan resultan vektor dengan metode grafis (poligon dan jajar genjang).", jp: 8},
+                                {text: "Menghitung komponen vektor fisis pada koordinat kartesius 2 dimensi.", jp: 6}
+                            ], 
                             materi: "Vektor Fisis", bulan: "Juli" 
                         },
                         { 
                             kelas: "11", fase: "Fase F", semester: "1", jp_materi: 22, jp_ph: 2, jp: 24, 
                             cp: "Peserta didik menganalisis dinamika gerak partikel fisis.", 
-                            tps: ["Menerapkan Hukum II Newton pada bidang miring limas.", "Menganalisis sistem tegangan tali pada katrol majemuk."], 
+                            tps: [
+                                {text: "Menerapkan Hukum II Newton pada bidang miring limas.", jp: 11},
+                                {text: "Menganalisis sistem tegangan tali pada katrol majemuk.", jp: 11}
+                            ], 
                             materi: "Dinamika Gerak Partikel", bulan: "Agustus" 
                         }
                     ],
@@ -3372,7 +3491,7 @@
                         },
                         { 
                             id: "dp10", materi: "Vektor Fisis", tp: "Penilaian Harian / Ulangan Harian", kelas: "11", semester: "1", 
-                            alokasi: [{ bulan: "Juli", minggu: 3, jp: 2 }] 
+                            alokasi: [{ bulan: "Juli", minggu: 4, jp: 2 }] 
                         }
                     ]
                 };
