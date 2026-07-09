@@ -68,6 +68,11 @@
         }
         /* Custom styles for printing */
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
             body {
                 background: white !important;
                 color: black !important;
@@ -113,7 +118,61 @@
         <h1 class="text-slate-800 dark:text-white text-3xl font-extrabold tracking-widest uppercase">PRO-ADMIN</h1>
         <p class="text-slate-500 dark:text-slate-400 text-sm mt-3 animate-pulse font-medium tracking-wide">Memuat Ruang Kerja Anda...</p>
         <div class="w-48 h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full mt-6 overflow-hidden relative">
-            <div class="absolute top-0 left-0 h-full bg-primary-500 w-1/2 animate-[pulse_1s_ease-in-out_infinite]"></div>
+            <div class="absolute top-0 left-0 h-full bg-primary-50 w-1/2 animate-[pulse_1s_ease-in-out_infinite]"></div>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH/EDIT PROMES (POPUP) -->
+    <div id="promes-modal" class="fixed inset-0 z-[9999] hidden bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col max-h-[95vh] transform transition-all">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900">
+                <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-primary-500"></i>
+                    <span id="promes-modal-title">Distribusi Jadwal TP ke Minggu Efektif</span>
+                </h3>
+                <button onclick="closePromesModal()" class="text-slate-500 hover:text-rose-500"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-5 flex-1">
+                <input type="hidden" id="promes-modal-index" value="">
+                
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">1. Pilih Materi Pokok (Dari PROTA)</label>
+                    <select id="promes-modal-materi" onchange="onPromesModalMateriChange()" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none">
+                        <!-- Diisi Dinamis -->
+                    </select>
+                </div>
+                
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">2. Pilih Tujuan Pembelajaran (TP) / Penilaian</label>
+                    <select id="promes-modal-tp" class="w-full border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-primary-500 outline-none">
+                        <option value="">-- Pilih Materi Pokok Terlebih Dahulu --</option>
+                    </select>
+                </div>
+                
+                <div class="pt-2 border-t border-slate-200 dark:border-slate-700">
+                    <div class="flex justify-between items-center mb-3">
+                        <div>
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">3. Pemetaan Alokasi Minggu & JP</label>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Satu TP dapat dipecah pelaksanaannya ke dalam beberapa minggu berbeda.</p>
+                        </div>
+                        <button onclick="addPromesAlokasiRow()" class="text-xs bg-primary-100 hover:bg-primary-200 dark:bg-primary-900/50 dark:hover:bg-primary-800 text-primary-700 dark:text-primary-400 font-bold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Tambah Minggu
+                        </button>
+                    </div>
+                    <div id="promes-alokasi-container" class="space-y-2.5">
+                        <!-- Baris Alokasi Dinamis -->
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-between items-center">
+                <span id="promes-modal-total-jp" class="text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-slate-800 px-3 py-1.5 rounded-lg">Total Alokasi: 0 JP</span>
+                <div class="flex gap-2">
+                    <button onclick="closePromesModal()" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors">Batal</button>
+                    <button onclick="savePromesModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-md shadow-emerald-500/20">
+                        <i class="fa-solid fa-floppy-disk"></i> Simpan Distribusi
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -133,7 +192,7 @@
                     </div>
                     <div>
                         <h1 class="font-extrabold text-lg tracking-wide text-white leading-tight">PRO-ADMIN</h1>
-                        <p class="text-[10px] text-slate-400 font-medium">App v3.4</p>
+                        <p class="text-[10px] text-slate-400 font-medium">App v3.5</p>
                     </div>
                 </div>
             </div>
@@ -280,7 +339,7 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-100 dark:border-slate-700/50 shadow-sm">
-                            <h4 class="font-bold text-sm text-slate-700 dark:text-slate-300 mb-4 uppercase tracking-wider">Distribusi JP per Materi Esensial (PROTA)</h4>
+                            <h4 class="font-bold text-sm text-slate-700 dark:text-slate-300 mb-4 uppercase tracking-wider">Distribusi JP per Materi Pokok (PROTA)</h4>
                             <div class="relative h-64 flex justify-center items-center">
                                 <canvas id="chartProta"></canvas>
                             </div>
@@ -1032,70 +1091,6 @@
                 <!-- 5. MODUL PROMES TAB -->
                 <div id="tab-promes" class="tab-content space-y-6 hidden">
                     
-                    <!-- Form Tambah/Distribusi PROMES -->
-                    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-100 dark:border-slate-700/50 shadow-sm space-y-6">
-                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-700 pb-3">
-                            <h3 class="font-bold text-base text-slate-800 dark:text-white">Alokasi & Distribusi Program Semester (PROMES)</h3>
-                            <button id="btn-cancel-promes-edit" onclick="resetPromesForm()" class="hidden text-xs text-rose-500 hover:underline">Batalkan Edit</button>
-                        </div>
-
-                        <input type="hidden" id="promes-index-edit" value="">
-
-                        <!-- Grid Pilihan Dasar -->
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            <div class="space-y-1 lg:col-span-2">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400">Pilih Materi Dari PROTA</label>
-                                <select id="promes-select-materi" onchange="autofillPromesFromProta()" class="w-full border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
-                                    <option value="">-- Pilih Materi (Sumber PROTA) --</option>
-                                    <!-- Diisi dinamis -->
-                                </select>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400">Bulan Distribusi Utama</label>
-                                <select id="promes-bulan" onchange="adjustWeekOptions()" class="w-full border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
-                                    <!-- Diisi dinamis sesuai semester aktif di profil sekolah -->
-                                </select>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-slate-500 dark:text-slate-400">Pilihan Minggu Efektif</label>
-                                <select id="promes-minggu" class="w-full border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
-                                    <!-- Diisi secara dinamis -->
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Blok Khusus Rincian TP & Ulangan -->
-                        <div class="bg-slate-50 dark:bg-slate-900/60 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-inner mt-2">
-                            <div class="mb-4">
-                                <label class="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide flex items-center gap-2">
-                                    <div class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400 flex items-center justify-center">
-                                        <i class="fa-solid fa-list-check"></i>
-                                    </div>
-                                    <span>Rincian TP & Ulangan Harian</span>
-                                </label>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 ml-10">Centang Tujuan Pembelajaran atau Penilaian Harian yang akan diajarkan pada minggu yang Anda pilih di atas, lalu sesuaikan alokasi Jam Pelajarannya.</p>
-                            </div>
-                            
-                            <!-- Container Checkboxes -->
-                            <div id="promes-tps-checkbox-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 max-h-[350px] overflow-y-auto pr-2">
-                                <div class="col-span-full py-8 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-center">
-                                    <div class="text-slate-300 dark:text-slate-600 mb-2">
-                                        <i class="fa-solid fa-mouse-pointer text-3xl"></i>
-                                    </div>
-                                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Pilih Materi Esensial Terlebih Dahulu</p>
-                                    <p class="text-xs text-slate-400 mt-1">Daftar TP akan muncul secara otomatis di sini setelah materi dari PROTA dipilih.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end pt-4 border-t border-slate-100 dark:border-slate-700 mt-4">
-                            <button onclick="savePromes()" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold py-2.5 px-6 rounded-lg text-sm transition-colors flex items-center space-x-2 shadow-md">
-                                <i class="fa-solid fa-circle-check"></i>
-                                <span id="btn-submit-promes-lbl">Distribusikan Jadwal</span>
-                            </button>
-                        </div>
-                    </div>
-
                     <!-- Panel Filters & Visual Grid -->
                     <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4">
                         <div class="flex flex-wrap items-center gap-3">
@@ -1112,11 +1107,18 @@
 
                         <!-- Print & Reset Promes -->
                         <div class="flex flex-wrap items-center gap-2">
+                            <!-- Tombol Tambah Alokasi Baru -->
+                            <button onclick="openPromesModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center space-x-1.5 transition-colors shadow-md">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Tambah Alokasi</span>
+                            </button>
+                            
                             <!-- Tombol Delete Massal Promes (Muncul dinamis jika dicentang) -->
                             <button id="btn-delete-promes-selected" onclick="deleteSelectedPromes()" class="hidden bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center space-x-1.5 transition-all shadow-md shadow-rose-500/20">
                                 <i class="fa-solid fa-trash-can animate-pulse"></i>
                                 <span>Hapus Terpilih</span>
                             </button>
+                            
                             <!-- Tombol Preview Cetak PROMES -->
                             <button onclick="showPromesPreview()" class="bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold px-3 py-2 rounded-lg flex items-center space-x-1.5 transition-colors">
                                 <i class="fa-solid fa-eye"></i>
@@ -1143,11 +1145,11 @@
                                             <input type="checkbox" id="bulk-select-promes" onchange="toggleSelectAllPromes(this)" class="rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-slate-300">
                                         </th>
                                         <th class="px-4 py-3 w-12 text-center">No</th>
-                                        <th class="px-4 py-3">Materi Pembelajaran & Rincian TP Terpilih</th>
-                                        <th class="px-4 py-3 text-center w-20">Jml JP</th>
-                                        <th class="px-4 py-3">Bulan</th>
-                                        <th class="px-4 py-3 text-center">Minggu Ke-</th>
-                                        <th class="px-4 py-3 text-center w-32 no-print">Aksi</th>
+                                        <th class="px-4 py-3 w-48">Materi Pokok</th>
+                                        <th class="px-4 py-3">Tujuan Pembelajaran (TP) / Evaluasi</th>
+                                        <th class="px-4 py-3 text-center w-20">Total JP</th>
+                                        <th class="px-4 py-3 w-48">Rincian Distribusi</th>
+                                        <th class="px-4 py-3 text-center w-24 no-print">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="promes-list" class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -1221,7 +1223,7 @@
                 <div class="flex space-x-3">
                     <span>Kurikulum Merdeka</span>
                     <span>•</span>
-                    <span>Versi Premium 3.4</span>
+                    <span>Versi Premium 3.5</span>
                 </div>
             </footer>
         </main>
@@ -1265,6 +1267,7 @@
     <script>
         // Temporary penampung TP untuk form PROTA sebelum disimpan
         let tempProtaTPs = [];
+        let currentPromesAlokasi = []; // Penampung state form dinamis modal PROMES
 
         // State Global Aplikasi (Data Dummy Default SD/Pendidikan Pancasila)
         let appData = {
@@ -1336,43 +1339,41 @@
                         "Menjelaskan akibat dari ketidakpatuhan terhadap aturan tata tertib."
                     ], 
                     materi: "Konstitusi dan Norma di Masyarakat", 
-                    bulan: "Agustus" 
+                    bulan: "Agustus - September" 
                 }
             ],
+            // Struktur Data Baru PROMES v3.5
             promes: [
-                { 
-                    materi: "Pancasila Sebagai Nilai Kehidupan", 
-                    kelas: "4", 
-                    jp: 4, 
-                    bulan: "Juli", 
-                    minggu: 3, // Disesuaikan agar menghindari MPLS (mgu 1) dan LAS (mgu 2)
-                    semester: "1", 
-                    tps: [
-                        { text: "Menjelaskan arti penting sila kesatu Pancasila dalam kehidupan sehari-hari.", jp: 4 }
-                    ] 
+                {
+                    id: "p1",
+                    materi: "Pancasila Sebagai Nilai Kehidupan",
+                    tp: "Menjelaskan arti penting sila kesatu Pancasila dalam kehidupan sehari-hari.",
+                    kelas: "4",
+                    semester: "1",
+                    alokasi: [
+                        { bulan: "Juli", minggu: 3, jp: 4 }
+                    ]
                 },
-                { 
-                    materi: "Pancasila Sebagai Nilai Kehidupan", 
-                    kelas: "4", 
-                    jp: 8, 
-                    bulan: "Juli", 
-                    minggu: 4, 
-                    semester: "1", 
-                    tps: [
-                        { text: "Mengidentifikasi contoh pengamalan sila kedua Pancasila di rumah dan sekolah.", jp: 4 },
-                        { text: "Mendemonstrasikan sikap menghormati perbedaan agama antar teman kelas.", jp: 4 }
-                    ] 
+                {
+                    id: "p2",
+                    materi: "Pancasila Sebagai Nilai Kehidupan",
+                    tp: "Mengidentifikasi contoh pengamalan sila kedua Pancasila di rumah dan sekolah.",
+                    kelas: "4",
+                    semester: "1",
+                    alokasi: [
+                        { bulan: "Juli", minggu: 4, jp: 2 },
+                        { bulan: "Agustus", minggu: 1, jp: 2 } // Contoh tersebar 2 minggu
+                    ]
                 },
-                { 
-                    materi: "Konstitusi dan Norma di Masyarakat", 
-                    kelas: "4", 
-                    jp: 5, 
-                    bulan: "Agustus", 
-                    minggu: 1, 
-                    semester: "1", 
-                    tps: [
-                        { text: "Mengidentifikasi norma aturan tidak tertulis di lingkungan keluarga.", jp: 5 }
-                    ] 
+                {
+                    id: "p3",
+                    materi: "Pancasila Sebagai Nilai Kehidupan",
+                    tp: "Penilaian Harian / Ulangan Harian",
+                    kelas: "4",
+                    semester: "1",
+                    alokasi: [
+                        { bulan: "Agustus", minggu: 2, jp: 2 }
+                    ]
                 }
             ]
         };
@@ -1408,7 +1409,7 @@
                     splash.classList.add('opacity-0');
                     setTimeout(() => {
                         splash.classList.add('hidden');
-                        showNotif("Berhasil Memuat", "Aplikasi v3.4 siap digunakan.", "success");
+                        showNotif("Berhasil Memuat", "Aplikasi v3.5 siap digunakan.", "success");
                     }, 1000); // Menunggu transisi opacity selesai
                 }
             }, 1500); // Lama waktu splash screen tayang
@@ -1431,15 +1432,27 @@
                     if (!parsedData.kalender.totalGanjil) parsedData.kalender.totalGanjil = { jul: 4, agu: 5, sep: 4, okt: 5, nov: 4, des: 4 };
                     if (!parsedData.kalender.totalGenap) parsedData.kalender.totalGenap = { jan: 5, feb: 4, mar: 4, apr: 4, mei: 5, jun: 4 };
                     
-                    if (parsedData.promes) {
-                        parsedData.promes = parsedData.promes.map(p => {
-                            if (p.tps && p.tps.length > 0 && typeof p.tps[0] === 'string') {
-                                const dividedJp = Math.max(1, Math.floor((p.jp || 0) / p.tps.length));
-                                p.tps = p.tps.map(t => ({ text: t, jp: dividedJp }));
-                            }
-                            return p;
-                        });
-                    } else {
+                    // SCRIPT MIGRASI STRUKTUR PROMES LAMA (v3.4) ke BARU (v3.5)
+                    if (parsedData.promes && parsedData.promes.length > 0) {
+                        if (parsedData.promes[0].tps !== undefined) {
+                            let newPromes = [];
+                            parsedData.promes.forEach(old => {
+                                old.tps.forEach(tp => {
+                                    newPromes.push({
+                                        id: 'migrated-' + Math.random().toString(36).substr(2, 9),
+                                        materi: old.materi,
+                                        tp: tp.text || tp,
+                                        kelas: old.kelas,
+                                        semester: old.semester,
+                                        alokasi: [
+                                            { bulan: old.bulan, minggu: old.minggu, jp: tp.jp || 2 }
+                                        ]
+                                    });
+                                });
+                            });
+                            parsedData.promes = newPromes;
+                        }
+                    } else if (!parsedData.promes) {
                         parsedData.promes = [];
                     }
 
@@ -1684,7 +1697,7 @@
             const headerTitle = document.getElementById('header-title');
             if (headerTitle) headerTitle.textContent = titles[tabId] || "Portal Administrasi";
 
-            if (tabId === 'promes') updatePromesFormDropdowns();
+            if (tabId === 'promes') renderPromes(); 
             if (tabId === 'dashboard') renderCharts();
         }
 
@@ -1917,7 +1930,7 @@
             };
 
             if (!dataProta.materi || dataProta.jp === 0) {
-                showNotif("Error", "Harap isi nama Materi Esensial dan Alokasi JP!", "error"); return;
+                showNotif("Error", "Harap isi nama Materi Pokok dan Alokasi JP!", "error"); return;
             }
             if (dataProta.tps.length === 0) {
                 showNotif("Error", "Harap tambahkan minimal satu Tujuan Pembelajaran (TP)!", "error"); return;
@@ -2035,7 +2048,6 @@
             if (checkedBoxes.length === 0) return;
 
             if (confirm(`Apakah Anda yakin ingin menghapus ${checkedBoxes.length} materi PROTA terpilih secara permanen?`)) {
-                // Ambil semua index, urutkan dari terbesar ke terkecil agar aman dari bug pergeseran urutan array saat splice
                 const indices = Array.from(checkedBoxes).map(cb => parseInt(cb.getAttribute('data-index')));
                 indices.sort((a, b) => b - a);
 
@@ -2123,7 +2135,7 @@
                                 <button onclick="editProta(${index})" class="text-slate-500 hover:text-primary-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-primary-50 p-1.5 rounded" title="Edit Data">
                                     <i class="fa-solid fa-pen text-xs"></i>
                                 </button>
-                                <button onclick="deleteProta(${index})" class="text-slate-500 hover:text-rose-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-rose-50 p-1.5 rounded" title="Hapus Data">
+                                <button onclick="deleteProta(${index})" class="text-slate-500 hover:text-rose-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-rose p-1.5 rounded" title="Hapus Data">
                                     <i class="fa-solid fa-trash-can text-xs"></i>
                                 </button>
                             </div>
@@ -2146,8 +2158,12 @@
         }
 
         // ==========================================
-        // CORE LOGIC: PROGRAM SEMESTER (PROMES)
+        // CORE LOGIC: PROGRAM SEMESTER (PROMES) NEW v3.5
         // ==========================================
+
+        function getFirstMonthOfSemester() {
+            return appData.school.semester === "1" ? "Juli" : "Januari";
+        }
 
         function getWeeksInMonth(m, semester) {
             const mapKey = m.toLowerCase().substring(0, 3);
@@ -2155,377 +2171,201 @@
             return appData.kalender.totalGenap[mapKey] || 5;
         }
 
-        function updatePromesFormDropdowns() {
-            const currentSemester = appData.school.semester; 
-            const cpSemesterLbl = document.getElementById('promes-current-semester-lbl');
-            if (cpSemesterLbl) cpSemesterLbl.textContent = currentSemester === "1" ? "Semester 1 (Ganjil)" : "Semester 2 (Genap)";
-
-            const selMateri = document.getElementById('promes-select-materi');
-            if (selMateri) {
-                selMateri.innerHTML = '<option value="">-- Pilih Materi (Sumber PROTA) --</option>';
-                appData.prota.forEach((item, index) => {
-                    if (item.semester === currentSemester) {
-                        selMateri.innerHTML += `<option value="${index}">Kelas ${item.kelas} - ${item.materi} (Total ${item.jp} JP)</option>`;
-                    }
-                });
-            }
-
-            const selBulan = document.getElementById('promes-bulan');
-            if (selBulan) {
-                selBulan.innerHTML = "";
-                const ganjilMonths = ["Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-                const genapMonths = ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
-                const months = currentSemester === "1" ? ganjilMonths : genapMonths;
-                months.forEach(m => { selBulan.innerHTML += `<option value="${m}">${m}</option>`; });
-            }
-
-            adjustWeekOptions();
-        }
-
-        function adjustWeekOptions() {
-            const promesBulan = document.getElementById('promes-bulan');
-            const bulan = promesBulan ? promesBulan.value : "Juli";
-            const selMinggu = document.getElementById('promes-minggu');
-            if (!selMinggu) return;
+        function openPromesModal(editIndex = -1) {
+            document.getElementById('promes-modal').classList.remove('hidden');
+            const selMateri = document.getElementById('promes-modal-materi');
+            const selTp = document.getElementById('promes-modal-tp');
+            const currentSemester = appData.school.semester;
             
-            selMinggu.innerHTML = "";
-            const currentSemester = appData.school.semester;
-            const maxWeeks = getWeeksInMonth(bulan, currentSemester);
-
-            if (maxWeeks === 0) {
-                selMinggu.innerHTML = '<option value="">(Bulan ini diliburkan/0 Mgu Efektif)</option>';
-                return;
-            }
-
-            for (let w = 1; w <= maxWeeks; w++) { 
-                selMinggu.innerHTML += `<option value="${w}">Minggu ke-${w}</option>`;
-            }
-        }
-
-        function autofillPromesFromProta() {
-            const promesSelMateri = document.getElementById('promes-select-materi');
-            const selectVal = promesSelMateri ? promesSelMateri.value : "";
-            const checkboxContainer = document.getElementById('promes-tps-checkbox-container');
-            if (!checkboxContainer) return;
-            checkboxContainer.innerHTML = "";
-
-            if (selectVal === "") {
-                checkboxContainer.innerHTML = `
-                    <div class="col-span-full py-8 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-center">
-                        <div class="text-slate-300 dark:text-slate-600 mb-2">
-                            <i class="fa-solid fa-mouse-pointer text-3xl"></i>
-                        </div>
-                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Pilih Materi Esensial Terlebih Dahulu</p>
-                        <p class="text-xs text-slate-400 mt-1">Daftar TP akan muncul secara otomatis di sini setelah materi dari PROTA dipilih.</p>
-                    </div>`;
-                return;
-            }
-
-            const protaItem = appData.prota[parseInt(selectVal)];
-            if (protaItem) {
-                const promesBulan = document.getElementById('promes-bulan');
-                if (promesBulan) {
-                    const bulanParts = protaItem.bulan ? protaItem.bulan.split(' - ') : ['Juli'];
-                    promesBulan.value = bulanParts[0];
-                }
-                adjustWeekOptions();
-
-                if (protaItem.tps && protaItem.tps.length > 0) {
-                    const validJpMateri = protaItem.jp_materi !== undefined ? protaItem.jp_materi : protaItem.jp;
-                    const jpPerTp = Math.max(1, Math.floor(validJpMateri / protaItem.tps.length));
-                    protaItem.tps.forEach((tp, idx) => {
-                        checkboxContainer.innerHTML += `
-                            <div class="flex items-start space-x-3 p-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors shadow-sm hover:border-primary-300">
-                                <input type="checkbox" id="cb-tp-${idx}" name="promes-tp-choice" value="${tp}" checked class="mt-1.5 w-4 h-4 rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-slate-300">
-                                <div class="flex-1 flex flex-col space-y-2.5">
-                                    <label for="cb-tp-${idx}" class="text-[11px] text-slate-700 dark:text-slate-300 cursor-pointer select-none leading-relaxed font-medium">${tp}</label>
-                                    <div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-2">
-                                        <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Alokasi:</span>
-                                        <div class="flex items-center space-x-1.5">
-                                            <input type="number" id="jp-tp-${idx}" min="1" class="w-16 border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 rounded-md px-2 py-1 text-xs font-bold text-primary-600 dark:text-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 text-center" value="${jpPerTp}">
-                                            <span class="text-[10px] text-slate-500 font-bold">JP</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    checkboxContainer.innerHTML = `
-                        <div class="col-span-full p-4 border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 rounded-lg flex items-center space-x-3 text-amber-600 dark:text-amber-500">
-                            <i class="fa-solid fa-triangle-exclamation text-xl"></i>
-                            <div class="text-sm">
-                                <p class="font-bold">Daftar TP Kosong!</p>
-                                <p class="text-xs opacity-80 mt-0.5">Materi PROTA yang dipilih tidak memiliki rincian Tujuan Pembelajaran. Silakan lengkapi di menu Program Tahunan.</p>
-                            </div>
-                        </div>`;
-                }
-
-                if (protaItem.jp_ph > 0) {
-                    const idxPh = protaItem.tps ? protaItem.tps.length : 0;
-                    const phValue = "Penilaian Harian / Ulangan Harian";
-                    checkboxContainer.innerHTML += `
-                        <div class="flex items-start space-x-3 p-3 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 transition-colors shadow-sm md:col-span-2 xl:col-span-1">
-                            <input type="checkbox" id="cb-tp-${idxPh}" name="promes-tp-choice" value="${phValue}" checked class="mt-1.5 w-4 h-4 rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-primary-300">
-                            <div class="flex-1 flex flex-col space-y-2.5">
-                                <label for="cb-tp-${idxPh}" class="text-[11px] text-primary-800 dark:text-primary-300 cursor-pointer select-none leading-relaxed font-bold"><i class="fa-solid fa-file-pen mr-1.5 opacity-70"></i>${phValue}</label>
-                                <div class="flex items-center justify-between border-t border-primary-200 dark:border-primary-800 pt-2">
-                                    <span class="text-[10px] text-primary-600 dark:text-primary-400 font-semibold uppercase tracking-wider">Alokasi:</span>
-                                    <div class="flex items-center space-x-1.5">
-                                        <input type="number" id="jp-tp-${idxPh}" min="1" class="w-16 border border-primary-300 dark:border-primary-600 bg-white dark:bg-slate-900 rounded-md px-2 py-1 text-xs font-bold text-primary-600 dark:text-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 text-center" value="${protaItem.jp_ph}">
-                                        <span class="text-[10px] text-primary-600 dark:text-primary-400 font-bold">JP</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-        }
-
-        function copyProtaToPromesAll() {
-            const currentSemester = appData.school.semester;
-            const protaFilter = appData.prota.filter(p => p.semester === currentSemester);
-
-            if (protaFilter.length === 0) {
-                showNotif("Peringatan", `Tidak ditemukan data materi PROTA pada Semester ${currentSemester}. Silakan tambah PROTA terlebih dahulu.`, "error");
-                return;
-            }
-
-            if (confirm(`Salin ${protaFilter.length} materi PROTA semester ini secara otomatis ke dalam jadwal PROMES? (Semua rincian TP & Ulangan akan disalin)`)) {
-                protaFilter.forEach(p => {
-                    const isExist = appData.promes.some(pr => pr.materi === p.materi && pr.semester === currentSemester);
-                    if (!isExist) {
-                        let tpsObj = [];
-                        const validJpMateri = p.jp_materi !== undefined ? p.jp_materi : p.jp;
-                        if (p.tps && p.tps.length > 0) {
-                            const dividedJp = Math.max(1, Math.floor(validJpMateri / p.tps.length));
-                            tpsObj = p.tps.map(t => ({ text: t, jp: dividedJp }));
-                        }
-                        if (p.jp_ph > 0) {
-                            tpsObj.push({ text: "Penilaian Harian / Ulangan Harian", jp: p.jp_ph });
-                        }
-                        
-                        appData.promes.push({
-                            materi: p.materi,
-                            jp: p.jp, 
-                            bulan: p.bulan,
-                            minggu: 1,
-                            semester: currentSemester,
-                            kelas: p.kelas,
-                            tps: tpsObj
-                        });
-                    }
-                });
-
-                saveToLocalStorage();
-                renderPromes();
-                showNotif("Duplikasi Berhasil", "Seluruh materi PROTA beserta semua TP berhasil disalin ke PROMES.", "success");
-            }
-        }
-
-        function savePromes() {
-            const getVal = id => document.getElementById(id) ? document.getElementById(id).value : "";
-            const index = getVal('promes-index-edit');
-            const selectVal = getVal('promes-select-materi');
-            const currentSemester = appData.school.semester;
-
-            let labelMateri = "";
-            let labelKelas = "";
-            
-            if (selectVal !== "") {
-                const protaItem = appData.prota[parseInt(selectVal)];
-                labelMateri = protaItem.materi;
-                labelKelas = protaItem.kelas;
-            } else if (index !== "") {
-                labelMateri = appData.promes[parseInt(index)].materi;
-                labelKelas = appData.promes[parseInt(index)].kelas;
-            } else {
-                showNotif("Error", "Harap pilih materi utama dari PROTA!", "error");
-                return;
-            }
-
-            const selectedTPs = [];
-            let accumulatedJp = 0;
-            const checkboxes = document.getElementsByName('promes-tp-choice');
-            checkboxes.forEach((cb, idx) => {
-                if (cb.checked) {
-                    const realIdx = cb.id.replace('cb-tp-', '');
-                    const jpInput = document.getElementById(`jp-tp-${realIdx}`);
-                    const tpJp = jpInput ? (parseInt(jpInput.value) || 0) : 0;
-                    selectedTPs.push({
-                        text: cb.value,
-                        jp: tpJp
-                    });
-                    accumulatedJp += tpJp;
+            selMateri.innerHTML = '<option value="">-- Pilih Materi Pokok --</option>';
+            appData.prota.forEach((item, index) => {
+                if (item.semester === currentSemester) {
+                    selMateri.innerHTML += `<option value="${index}">Kls ${item.kelas} - ${item.materi} (Total: ${item.jp} JP)</option>`;
                 }
             });
 
-            if (selectedTPs.length === 0) {
-                showNotif("Error", "Harap pilih minimal satu Tujuan Pembelajaran (TP) atau Ulangan!", "error");
-                return;
+            if (editIndex > -1) {
+                document.getElementById('promes-modal-title').textContent = "Edit Jadwal Distribusi";
+                document.getElementById('promes-modal-index').value = editIndex;
+                const data = appData.promes[editIndex];
+                
+                const protaIdx = appData.prota.findIndex(p => p.materi === data.materi && p.semester === currentSemester);
+                if (protaIdx > -1) {
+                    selMateri.value = protaIdx;
+                    onPromesModalMateriChange();
+                    selTp.value = data.tp;
+                }
+                
+                // Deep copy data alokasi yang mau diedit
+                currentPromesAlokasi = JSON.parse(JSON.stringify(data.alokasi));
+            } else {
+                document.getElementById('promes-modal-title').textContent = "Distribusi Jadwal TP Baru";
+                document.getElementById('promes-modal-index').value = "";
+                selTp.innerHTML = '<option value="">-- Pilih Materi Pokok Terlebih Dahulu --</option>';
+                currentPromesAlokasi = [{ bulan: getFirstMonthOfSemester(), minggu: 1, jp: 2 }];
+            }
+            
+            renderPromesAlokasiRows();
+        }
+
+        function closePromesModal() {
+            document.getElementById('promes-modal').classList.add('hidden');
+        }
+
+        function onPromesModalMateriChange() {
+            const protaIdx = document.getElementById('promes-modal-materi').value;
+            const selTp = document.getElementById('promes-modal-tp');
+            selTp.innerHTML = '<option value="">-- Pilih TP / Evaluasi --</option>';
+            
+            if (protaIdx !== "") {
+                const p = appData.prota[protaIdx];
+                if (p.tps && p.tps.length > 0) {
+                    p.tps.forEach(tp => {
+                        selTp.innerHTML += `<option value="${tp}">${tp}</option>`;
+                    });
+                }
+                if (p.jp_ph > 0) {
+                    selTp.innerHTML += `<option value="Penilaian Harian / Ulangan Harian" class="font-bold text-primary-600">Penilaian Harian / Ulangan Harian (${p.jp_ph} JP)</option>`;
+                }
+                
+                // Hanya atur ulang bulan pertama kalau mode tambah baru
+                if (document.getElementById('promes-modal-index').value === "") {
+                    const defaultBulan = p.bulan ? p.bulan.split(' - ')[0] : getFirstMonthOfSemester();
+                    currentPromesAlokasi = [{ bulan: defaultBulan, minggu: 1, jp: 2 }];
+                    renderPromesAlokasiRows();
+                }
+            }
+        }
+
+        function renderPromesAlokasiRows() {
+            const container = document.getElementById('promes-alokasi-container');
+            container.innerHTML = "";
+            
+            const currentSemester = appData.school.semester;
+            const months = currentSemester === "1" 
+                ? ["Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+                : ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
+                
+            let totalDistribusi = 0;
+
+            currentPromesAlokasi.forEach((alok, idx) => {
+                totalDistribusi += alok.jp;
+
+                let monthOptions = "";
+                months.forEach(m => {
+                    monthOptions += `<option value="${m}" ${alok.bulan === m ? 'selected' : ''}>${m}</option>`;
+                });
+                
+                let weekOptions = "";
+                const maxWeeks = getWeeksInMonth(alok.bulan, currentSemester);
+                for(let w=1; w<=maxWeeks; w++) {
+                    weekOptions += `<option value="${w}" ${alok.pekan == w || alok.minggu == w ? 'selected' : ''}>Minggu ke-${w}</option>`;
+                }
+                if(maxWeeks === 0) weekOptions = `<option value="">0 Mgu Efektif</option>`;
+
+                container.innerHTML += `
+                    <div class="flex items-center gap-2 p-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-sm transition-colors hover:border-primary-300">
+                        <select class="w-[40%] border-slate-300 rounded-md px-2 py-1.5 text-xs focus:ring-primary-500 dark:bg-slate-900 dark:border-slate-600" onchange="updateAlokasiBulan(${idx}, this.value)">
+                            ${monthOptions}
+                        </select>
+                        <select class="w-[35%] border-slate-300 rounded-md px-2 py-1.5 text-xs focus:ring-primary-500 dark:bg-slate-900 dark:border-slate-600" onchange="updateAlokasiMinggu(${idx}, this.value)">
+                            ${weekOptions}
+                        </select>
+                        <div class="w-[25%] flex items-center relative">
+                            <input type="number" min="1" value="${alok.jp}" class="w-full border-slate-300 rounded-md pl-2 pr-6 py-1.5 text-xs font-bold text-center text-primary-600 focus:ring-primary-500 dark:bg-slate-900 dark:border-slate-600" onchange="updateAlokasiJP(${idx}, this.value)" placeholder="JP">
+                            <span class="absolute right-2 text-[10px] text-slate-400 font-bold">JP</span>
+                        </div>
+                        <button onclick="removePromesAlokasiRow(${idx})" class="text-rose-400 hover:text-rose-600 p-1.5 bg-rose-50 dark:bg-rose-900/30 hover:bg-rose-100 rounded-md transition-colors" title="Hapus baris ini">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            // Update Label Total
+            const labelTotal = document.getElementById('promes-modal-total-jp');
+            if (labelTotal) labelTotal.textContent = `Total Alokasi: ${totalDistribusi} JP`;
+        }
+
+        function addPromesAlokasiRow() {
+            const lastAlok = currentPromesAlokasi[currentPromesAlokasi.length - 1];
+            currentPromesAlokasi.push({ 
+                bulan: lastAlok ? lastAlok.bulan : getFirstMonthOfSemester(), 
+                minggu: lastAlok ? lastAlok.pekan || lastAlok.minggu : 1, 
+                jp: 2 
+            });
+            renderPromesAlokasiRows();
+        }
+
+        function removePromesAlokasiRow(idx) {
+            if (currentPromesAlokasi.length === 1) {
+                showNotif("Peringatan", "Harus ada minimal 1 alokasi minggu efektif.", "error"); return;
+            }
+            currentPromesAlokasi.splice(idx, 1);
+            renderPromesAlokasiRows();
+        }
+
+        function updateAlokasiBulan(idx, val) {
+            currentPromesAlokasi[idx].bulan = val;
+            currentPromesAlokasi[idx].minggu = 1; // reset week when month changes
+            renderPromesAlokasiRows();
+        }
+
+        function updateAlokasiMinggu(idx, val) {
+            currentPromesAlokasi[idx].pekan = parseInt(val) || 1;
+            currentPromesAlokasi[idx].minggu = parseInt(val) || 1;
+        }
+
+        function updateAlokasiJP(idx, val) {
+            currentPromesAlokasi[idx].jp = parseInt(val) || 0;
+            renderPromesAlokasiRows(); // Memperbarui kalkulasi total di bawah modal
+        }
+
+        function savePromesModal() {
+            const idxEdit = document.getElementById('promes-modal-index').value;
+            const protaIdx = document.getElementById('promes-modal-materi').value;
+            const tpSelect = document.getElementById('promes-modal-tp').value;
+            const currentSemester = appData.school.semester;
+
+            if (protaIdx === "" || tpSelect === "") {
+                showNotif("Error", "Materi Pokok dan TP wajib dipilih!", "error"); return;
             }
 
-            const dataPromes = {
-                materi: labelMateri,
-                kelas: labelKelas,
-                jp: accumulatedJp,
-                bulan: getVal('promes-bulan'),
-                minggu: parseInt(getVal('promes-minggu')) || 1,
+            // Validasi apakah minggu yang sama di-input dua kali
+            const uniqueCheck = new Set();
+            let isDuplicate = false;
+            currentPromesAlokasi.forEach(a => {
+                const key = `${a.bulan}-${a.pekan || a.minggu}`;
+                if(uniqueCheck.has(key)) isDuplicate = true;
+                uniqueCheck.add(key);
+            });
+            
+            if (isDuplicate) {
+                showNotif("Error", "Ada duplikasi pada pemetaan Bulan dan Minggu yang sama. Silakan gabungkan JP-nya.", "error"); return;
+            }
+
+            const pInfo = appData.prota[protaIdx];
+
+            const newData = {
+                id: (idxEdit !== "") ? appData.promes[idxEdit].id : 'alloc-' + Math.random().toString(36).substr(2, 9),
+                materi: pInfo.materi,
+                tp: tpSelect,
+                kelas: pInfo.kelas,
                 semester: currentSemester,
-                tps: selectedTPs
+                alokasi: JSON.parse(JSON.stringify(currentPromesAlokasi))
             };
 
-            if (index !== "") {
-                appData.promes[parseInt(index)] = dataPromes;
-                showNotif("Sukses", "Distribusi PROMES berhasil diperbarui.", "success");
+            if (idxEdit !== "") {
+                appData.promes[idxEdit] = newData;
+                showNotif("Sukses", "Distribusi jadwal TP berhasil diperbarui.", "success");
             } else {
-                appData.promes.push(dataPromes);
-                showNotif("Sukses", "Materi dan TP berhasil didistribusikan ke Kalender PROMES.", "success");
+                appData.promes.push(newData);
+                showNotif("Sukses", "Distribusi jadwal TP berhasil ditambahkan.", "success");
             }
 
             saveToLocalStorage();
-            resetPromesForm();
+            closePromesModal();
             renderPromes();
-        }
-
-        function editPromes(index) {
-            const data = appData.promes[index];
-            if (!data) return;
-
-            const safeSetVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
-
-            safeSetVal('promes-index-edit', index);
-            
-            // Perbaikan Menu Edit: Aktifkan kembali dropdown dan atur nilainya agar sinkron
-            const promesSelectMateri = document.getElementById('promes-select-materi');
-            if (promesSelectMateri) {
-                promesSelectMateri.disabled = false; // Memastikan dropdown bisa diklik oleh guru
-                const protaIdx = appData.prota.findIndex(p => p.materi === data.materi);
-                if (protaIdx !== -1) {
-                    promesSelectMateri.value = protaIdx;
-                } else {
-                    promesSelectMateri.value = "";
-                }
-            }
-
-            safeSetVal('promes-bulan', data.bulan);
-            adjustWeekOptions();
-            safeSetVal('promes-minggu', data.minggu);
-
-            const checkboxContainer = document.getElementById('promes-tps-checkbox-container');
-            if (checkboxContainer) {
-                checkboxContainer.innerHTML = "";
-
-                const protaItem = appData.prota.find(p => p.materi === data.materi);
-                
-                const renderCb = (tpText, idx, isChecked, tpJp, isPh = false) => {
-                    if(!isPh) {
-                        checkboxContainer.innerHTML += `
-                            <div class="flex items-start space-x-3 p-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors shadow-sm hover:border-primary-300">
-                                <input type="checkbox" id="cb-tp-${idx}" name="promes-tp-choice" value="${tpText}" ${isChecked} class="mt-1.5 w-4 h-4 rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-slate-300">
-                                <div class="flex-1 flex flex-col space-y-2.5">
-                                    <label for="cb-tp-${idx}" class="text-[11px] text-slate-700 dark:text-slate-300 cursor-pointer select-none leading-relaxed font-medium">${tpText}</label>
-                                    <div class="flex items-center justify-between border-t border-slate-100 dark:border-slate-700 pt-2">
-                                        <span class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Alokasi:</span>
-                                        <div class="flex items-center space-x-1.5">
-                                            <input type="number" id="jp-tp-${idx}" min="1" class="w-16 border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 rounded-md px-2 py-1 text-xs font-bold text-primary-600 dark:text-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 text-center" value="${tpJp}">
-                                            <span class="text-[10px] text-slate-500 font-bold">JP</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        checkboxContainer.innerHTML += `
-                            <div class="flex items-start space-x-3 p-3 rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 transition-colors shadow-sm md:col-span-2 xl:col-span-1">
-                                <input type="checkbox" id="cb-tp-${idx}" name="promes-tp-choice" value="${tpText}" ${isChecked} class="mt-1.5 w-4 h-4 rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-primary-300">
-                                <div class="flex-1 flex flex-col space-y-2.5">
-                                    <label for="cb-tp-${idx}" class="text-[11px] text-primary-800 dark:text-primary-300 cursor-pointer select-none leading-relaxed font-bold"><i class="fa-solid fa-file-pen mr-1.5 opacity-70"></i>${tpText}</label>
-                                    <div class="flex items-center justify-between border-t border-primary-200 dark:border-primary-800 pt-2">
-                                        <span class="text-[10px] text-primary-600 dark:text-primary-400 font-semibold uppercase tracking-wider">Alokasi:</span>
-                                        <div class="flex items-center space-x-1.5">
-                                            <input type="number" id="jp-tp-${idx}" min="1" class="w-16 border border-primary-300 dark:border-primary-600 bg-white dark:bg-slate-900 rounded-md px-2 py-1 text-xs font-bold text-primary-600 dark:text-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 text-center" value="${tpJp}">
-                                            <span class="text-[10px] text-primary-600 dark:text-primary-400 font-bold">JP</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                };
-
-                if (protaItem && protaItem.tps) {
-                    protaItem.tps.forEach((tpText, idx) => {
-                        const existingTpObj = data.tps ? data.tps.find(t => t.text === tpText) : null;
-                        const isChecked = existingTpObj ? "checked" : "";
-                        const validJpMateri = protaItem.jp_materi !== undefined ? protaItem.jp_materi : protaItem.jp;
-                        const defaultJp = Math.max(1, Math.floor(validJpMateri / protaItem.tps.length));
-                        const tpJp = existingTpObj ? existingTpObj.jp : defaultJp;
-                        renderCb(tpText, idx, isChecked, tpJp);
-                    });
-
-                    const phText = "Penilaian Harian / Ulangan Harian";
-                    if (protaItem.jp_ph > 0) {
-                        const phIdx = protaItem.tps.length;
-                        const existingPhObj = data.tps ? data.tps.find(t => t.text === phText) : null;
-                        const isChecked = existingPhObj ? "checked" : "";
-                        const tpJp = existingPhObj ? existingPhObj.jp : protaItem.jp_ph;
-                        renderCb(phText, phIdx, isChecked, tpJp, true);
-                    } else if (data.tps) {
-                        const existingPhObj = data.tps.find(t => t.text === phText);
-                        if(existingPhObj) renderCb(phText, 999, "checked", existingPhObj.jp, true);
-                    }
-                } else if (data.tps) {
-                    data.tps.forEach((tpObj, idx) => {
-                        const isPh = tpObj.text === "Penilaian Harian / Ulangan Harian";
-                        renderCb(tpObj.text, idx, "checked", tpObj.jp, isPh);
-                    });
-                }
-            }
-
-            const pSubmit = document.getElementById('btn-submit-promes-lbl');
-            const pCancel = document.getElementById('btn-cancel-promes-edit');
-            if (pSubmit) pSubmit.textContent = "Simpan Perubahan";
-            if (pCancel) pCancel.classList.remove('hidden');
-
-            const tabPromes = document.getElementById('tab-promes');
-            if (tabPromes) tabPromes.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function resetPromesForm() {
-            const safeSetVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
-
-            safeSetVal('promes-index-edit', "");
-            const selMateri = document.getElementById('promes-select-materi');
-            if (selMateri) {
-                selMateri.disabled = false;
-                selMateri.value = "";
-            }
-            
-            const cbContainer = document.getElementById('promes-tps-checkbox-container');
-            if (cbContainer) cbContainer.innerHTML = `
-                <div class="col-span-full py-8 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-center">
-                    <div class="text-slate-300 dark:text-slate-600 mb-2">
-                        <i class="fa-solid fa-mouse-pointer text-3xl"></i>
-                    </div>
-                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Pilih Materi Esensial Terlebih Dahulu</p>
-                    <p class="text-xs text-slate-400 mt-1">Daftar TP akan muncul secara otomatis di sini setelah materi dari PROTA dipilih.</p>
-                </div>`;
-            
-            const pSubmit = document.getElementById('btn-submit-promes-lbl');
-            const pCancel = document.getElementById('btn-cancel-promes-edit');
-            if (pSubmit) pSubmit.textContent = "Distribusikan Materi";
-            if (pCancel) pCancel.classList.add('hidden');
-        }
-
-        function deletePromes(index) {
-            if (confirm("Apakah Anda yakin ingin menghapus alokasi jadwal PROMES ini?")) {
-                appData.promes.splice(index, 1);
-                saveToLocalStorage();
-                renderPromes();
-                showNotif("Hapus Data", "Jadwal alokasi berhasil dibersihkan.", "success");
-            }
         }
 
         // --- BULK ACTION UNTUK PROMES ---
@@ -2562,7 +2402,6 @@
             if (checkedBoxes.length === 0) return;
 
             if (confirm(`Apakah Anda yakin ingin menghapus ${checkedBoxes.length} jadwal alokasi PROMES terpilih?`)) {
-                // Ambil semua index, urutkan dari terbesar ke terkecil agar aman dari bug pergeseran urutan array saat splice
                 const indices = Array.from(checkedBoxes).map(cb => parseInt(cb.getAttribute('data-index')));
                 indices.sort((a, b) => b - a);
 
@@ -2581,6 +2420,15 @@
             }
         }
 
+        function deletePromes(index) {
+            if (confirm("Apakah Anda yakin ingin menghapus alokasi jadwal ini?")) {
+                appData.promes.splice(index, 1);
+                saveToLocalStorage();
+                renderPromes();
+                showNotif("Hapus Data", "Jadwal alokasi berhasil dibersihkan.", "success");
+            }
+        }
+
         function renderPromes() {
             const listEl = document.getElementById('promes-list');
             if (!listEl) return;
@@ -2594,60 +2442,56 @@
             let count = 0;
             let totalJp = 0;
 
-            appData.promes.forEach((item, index) => {
-                if (item.semester !== currentSemester) return;
-                if (classFilter && item.kelas !== classFilter) return;
+            const filteredPromes = appData.promes.filter(item => {
+                if (item.semester !== currentSemester) return false;
+                if (classFilter && item.kelas !== classFilter) return false;
+                return true;
+            });
 
+            filteredPromes.forEach((item, originalIndex) => {
+                const actualIndex = appData.promes.findIndex(p => p.id === item.id);
                 count++;
-                totalJp += item.jp;
+                
+                const totalJpItem = item.alokasi.reduce((s, a) => s + a.jp, 0);
+                totalJp += totalJpItem;
 
-                let tpsHTML = `<ul class="list-disc pl-4 text-[11px] space-y-1 text-slate-600 dark:text-slate-400 mt-1.5">`;
-                if (item.tps && item.tps.length > 0) {
-                    item.tps.forEach(tpObj => {
-                        const isPh = tpObj.text === "Penilaian Harian / Ulangan Harian";
-                        if(isPh) {
-                            tpsHTML += `<li><span class="text-primary-600 dark:text-primary-400 font-bold"><i class="fa-solid fa-file-pen mr-1"></i>${tpObj.text}</span> <span class="font-bold text-slate-500 ml-1">(${tpObj.jp} JP)</span></li>`;
-                        } else {
-                            tpsHTML += `<li><span class="text-slate-800 dark:text-slate-200">${tpObj.text}</span> <span class="font-bold text-primary-500 ml-1">(${tpObj.jp} JP)</span></li>`;
-                        }
-                    });
-                } else {
-                    tpsHTML += `<li class="italic text-slate-400">Tidak ada TP terpilih</li>`;
-                }
-                tpsHTML += `</ul>`;
+                let rincianHTML = `<div class="flex flex-wrap gap-2 mt-2">`;
+                item.alokasi.forEach(a => {
+                    rincianHTML += `
+                        <span class="text-[10px] bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 px-2 py-1 rounded shadow-sm">
+                            <i class="fa-regular fa-calendar mr-1"></i> ${a.bulan}, Mgu ke-${a.pekan || a.minggu} <strong class="ml-1">${a.jp} JP</strong>
+                        </span>
+                    `;
+                });
+                rincianHTML += `</div>`;
+
+                const isPh = item.tp === "Penilaian Harian / Ulangan Harian";
+                const tpIcon = isPh ? `<i class="fa-solid fa-file-pen text-rose-500 mr-1"></i>` : `<span class="text-primary-500 mr-1">-</span>`;
+                const tpClass = isPh ? `font-bold text-rose-600 dark:text-rose-400` : `font-medium text-slate-700 dark:text-slate-300`;
 
                 listEl.innerHTML += `
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                         <td class="px-4 py-3 text-center no-print">
-                            <input type="checkbox" class="promes-row-checkbox rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-slate-300" data-index="${index}" onchange="checkBulkSelectPromesStatus()">
+                            <input type="checkbox" class="promes-row-checkbox rounded text-primary-600 focus:ring-primary-500 cursor-pointer border-slate-300" data-index="${actualIndex}" onchange="checkBulkSelectPromesStatus()">
                         </td>
                         <td class="px-4 py-3 text-center font-bold text-slate-400 text-xs">${count}</td>
                         <td class="px-4 py-3">
-                            <h5 class="font-bold text-sm text-slate-800 dark:text-white">${item.materi}</h5>
-                            <div class="mt-1 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-2 rounded">
-                                <span class="text-[10px] text-primary-500 uppercase font-bold border-b border-slate-100 dark:border-slate-800 pb-1 block mb-1">Rincian Terdistribusi (Minggu Ini):</span>
-                                ${tpsHTML}
-                            </div>
-                            <p class="text-[10px] text-slate-400 mt-1.5">Kelas ${item.kelas} • Semester ${item.semester}</p>
+                            <h5 class="font-bold text-xs text-slate-800 dark:text-white uppercase tracking-wider mb-1 opacity-70">${item.materi}</h5>
+                            <p class="${tpClass} text-sm leading-relaxed">${tpIcon} ${item.tp}</p>
+                            <p class="text-[9px] text-slate-400 mt-1">Kelas ${item.kelas} • Smt ${item.semester}</p>
                         </td>
-                        <td class="px-4 py-3 text-center font-bold text-slate-700 dark:text-slate-300">
-                            ${item.jp} JP<br>
-                            <span class="text-[9px] font-normal text-slate-400">(Total entry)</span>
+                        <td class="px-4 py-3 text-center font-bold text-primary-600 dark:text-primary-400 text-lg">
+                            ${totalJpItem} <span class="text-[10px] font-medium text-slate-400">JP</span>
                         </td>
-                        <td class="px-4 py-3 text-xs font-semibold text-primary-600 dark:text-primary-400">
-                            ${item.bulan}
+                        <td class="px-4 py-3">
+                            ${rincianHTML}
                         </td>
-                        <td class="px-4 py-3 text-center">
-                            <span class="bg-gold-500/10 text-gold-600 dark:text-gold-400 font-bold px-2.5 py-1 rounded text-xs border border-gold-500/20 shadow-sm">
-                                Minggu ke-${item.minggu}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-center no-print">
+                        <td class="px-4 py-3 text-center no-print w-24">
                             <div class="flex items-center justify-center space-x-1.5">
-                                <button onclick="editPromes(${index})" class="text-slate-500 hover:text-primary-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-primary-50 p-1.5 rounded" title="Edit Alokasi">
+                                <button onclick="openPromesModal(${actualIndex})" class="text-slate-500 hover:text-primary-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-primary-50 p-1.5 rounded" title="Edit Alokasi">
                                     <i class="fa-solid fa-pen text-xs"></i>
                                 </button>
-                                <button onclick="deletePromes(${index})" class="text-slate-500 hover:text-rose-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-rose p-1.5 rounded" title="Hapus Alokasi">
+                                <button onclick="deletePromes(${actualIndex})" class="text-slate-500 hover:text-rose-500 bg-slate-100 dark:bg-slate-700/50 hover:bg-rose p-1.5 rounded" title="Hapus Alokasi">
                                     <i class="fa-solid fa-trash-can text-xs"></i>
                                 </button>
                             </div>
@@ -2661,16 +2505,12 @@
                     <tr>
                         <td colspan="7" class="px-4 py-12 text-center text-xs text-slate-400">
                             <i class="fa-solid fa-calendar-xmark text-3xl mb-2 text-slate-300 block"></i>
-                            Belum ada alokasi TP yang didistribusikan ke program semester (PROMES).
+                            Belum ada jadwal distribusi TP yang dipetakan pada PROMES.
                         </td>
                     </tr>
                 `;
             }
 
-            const statPromesCount = document.getElementById('stat-promes-count');
-            if (statPromesCount) statPromesCount.textContent = count;
-
-            // Atur ulang tombol hapus terpilih ke keadaan default
             checkBulkSelectPromesStatus();
         }
 
@@ -2857,6 +2697,26 @@
             return html;
         }
 
+        function getNonEfektifTag(month, week, semester, keg) {
+            if (semester === "1") {
+                if (keg.stsMonthS1 === month && keg.stsWeekS1 === week) return "STS";
+                if (keg.sasMonthS1 === month && keg.sasWeekS1 === week) return "SAS";
+                if (keg.liburMonthS1 === month && week >= keg.liburStartS1 && week <= keg.liburEndS1) return "LBR";
+            } else {
+                if (keg.stsMonthS2 === month && keg.stsWeekS2 === week) return "STS";
+                if (keg.sasMonthS2 === month && keg.sasWeekS2 === week) return "SAS";
+                if (keg.liburMonthS2 === month && week >= keg.liburStartS2 && week <= keg.liburEndS2) return "LBR";
+            }
+
+            const customList = appData.kalender.customKegiatan || [];
+            const found = customList.find(k => k.semester === semester && k.bulan === month && k.minggu === week);
+            if (found) {
+                return found.singkatan.toUpperCase();
+            }
+
+            return null;
+        }
+
         function buildPromesPrintHTML() {
             const currentSemester = appData.school.semester;
             const filterPromesKelas = document.getElementById('filter-promes-kelas');
@@ -2883,7 +2743,7 @@
                         <thead class="bg-slate-100">
                             <tr>
                                 <th class="border border-black px-1 py-1 text-center w-5 font-bold" rowspan="2">No</th>
-                                <th class="border border-black px-1 py-1 font-bold w-24" rowspan="2">Materi Esensial</th>
+                                <th class="border border-black px-1 py-1 font-bold w-24" rowspan="2">Materi Pokok</th>
                                 <th class="border border-black px-1 py-1 font-bold w-48" rowspan="2">Tujuan Pembelajaran (TP) / Evaluasi</th>
                                 <th class="border border-black px-1 py-1 text-center w-7 font-bold" rowspan="2">JP</th>
             `;
@@ -2917,75 +2777,58 @@
                 html += `<tr><td colspan="${4 + totalDynamicCols}" class="border border-black px-3 py-4 text-center">Tidak ada data alokasi program semester untuk semester ini.</td></tr>`;
             } else {
                 let totalJpPromes = 0;
-                filteredPromes.forEach((item, index) => {
-                    totalJpPromes += item.jp;
-                    const rowSpan = item.tps && item.tps.length > 0 ? item.tps.length : 1;
+                
+                // Grouping untuk render mirip seperti lama: Materi -> (Tps...)
+                const grouped = {};
+                filteredPromes.forEach(item => {
+                    if (!grouped[item.materi]) grouped[item.materi] = [];
+                    grouped[item.materi].push(item);
+                });
 
-                    if (!item.tps || item.tps.length === 0) {
-                        html += `
-                            <tr class="hover:bg-slate-50">
-                                <td class="border border-black px-1 py-1.5 text-center font-bold">${index + 1}</td>
-                                <td class="border border-black px-2 py-1.5 font-bold text-slate-900">${item.materi}</td>
-                                <td class="border border-black px-2 py-1.5 text-center italic text-slate-400">Belum ada TP spesifik</td>
-                                <td class="border border-black px-1 py-1.5 text-center font-bold text-slate-900">${item.jp}</td>
-                        `;
+                let materiCounter = 0;
+
+                Object.keys(grouped).forEach((materiKey) => {
+                    materiCounter++;
+                    const items = grouped[materiKey];
+                    const rowSpan = items.length;
+                    
+                    items.forEach((item, tpIdx) => {
+                        const totalJpItem = item.alokasi.reduce((s,a) => s+a.jp, 0);
+                        totalJpPromes += totalJpItem;
+                        
+                        html += `<tr class="hover:bg-slate-50">`;
+                        if (tpIdx === 0) {
+                            html += `<td class="border border-black px-1 py-1 text-center font-bold align-top" rowspan="${rowSpan}">${materiCounter}</td>`;
+                            html += `<td class="border border-black px-1 py-1 font-bold text-slate-900 leading-snug align-top" rowspan="${rowSpan}">${materiKey}</td>`;
+                        }
+
+                        const isPh = item.tp === "Penilaian Harian / Ulangan Harian";
+                        if(isPh) {
+                            html += `<td class="border border-black px-1 py-1 text-[8px] text-gray-900 font-bold leading-tight bg-gray-50">UH: ${item.tp}</td>`;
+                        } else {
+                            html += `<td class="border border-black px-1 py-1 text-[8px] text-slate-800 leading-tight pr-1"><span class="mr-0.5">-</span> ${item.tp}</td>`;
+                        }
+                        
+                        html += `<td class="border border-black p-0 text-center font-bold text-slate-900 bg-slate-50 align-middle">${totalJpItem}</td>`;
+
                         months.forEach(m => {
                             const wCount = getWeeksInMonth(m, currentSemester);
                             for (let w = 1; w <= wCount; w++) {
                                 let nonEfektifTag = getNonEfektifTag(m, w, currentSemester, keg);
                                 if (nonEfektifTag) {
-                                    html += `<td class="border border-black text-center bg-rose-200 text-rose-900 font-bold text-[8px] p-0 align-middle">${nonEfektifTag}</td>`;
-                                } else if (item.bulan === m && item.minggu === w) {
-                                    html += `<td class="border border-black text-center bg-sky-200 text-sky-950 font-extrabold text-[10px] p-0 align-middle">${item.jp}</td>`;
+                                    html += `<td class="border border-black text-center bg-rose-200 text-rose-900 font-bold text-[6px] p-0 align-middle">${nonEfektifTag}</td>`;
                                 } else {
-                                    html += `<td class="border border-black text-center text-transparent">-</td>`;
-                                }
-                            }
-                        });
-                        html += `</tr>`;
-                    } else {
-                        item.tps.forEach((tpObj, tpIdx) => {
-                            html += `<tr class="hover:bg-slate-50">`;
-                            
-                            if (tpIdx === 0) {
-                                html += `<td class="border border-black px-1 py-1 text-center font-bold align-top" rowspan="${rowSpan}">${index + 1}</td>`;
-                                html += `<td class="border border-black px-1 py-1 font-bold text-slate-900 leading-snug align-top" rowspan="${rowSpan}">${item.materi}</td>`;
-                            }
-
-                            const isPh = tpObj.text === "Penilaian Harian / Ulangan Harian";
-                            if(isPh) {
-                                html += `<td class="border border-black px-1 py-1 text-[8px] text-gray-900 font-bold leading-tight bg-gray-50">UH: ${tpObj.text}</td>`;
-                            } else {
-                                html += `<td class="border border-black px-1 py-1 text-[8px] text-slate-800 leading-tight pr-1"><span class="mr-0.5">-</span> ${tpObj.text}</td>`;
-                            }
-                            
-                            html += `<td class="border border-black p-0 text-center font-bold text-slate-900 bg-slate-50 align-middle">${tpObj.jp}</td>`;
-
-                            months.forEach(m => {
-                                const wCount = getWeeksInMonth(m, currentSemester);
-                                for (let w = 1; w <= wCount; w++) {
-                                    let nonEfektifTag = getNonEfektifTag(m, w, currentSemester, keg);
-                                    if (nonEfektifTag) {
-                                        html += `
-                                            <td class="border border-black text-center bg-rose-200 text-rose-900 font-bold text-[6px] tracking-tighter p-0 align-middle">
-                                                ${nonEfektifTag}
-                                            </td>
-                                        `;
-                                    } else if (item.bulan === m && item.minggu === w) {
-                                        html += `
-                                            <td class="border border-black text-center bg-sky-200 text-sky-950 font-extrabold text-[8px] p-0 align-middle">
-                                                ${tpObj.jp}
-                                            </td>
-                                        `;
+                                    const alok = item.alokasi.find(a => a.bulan === m && parseInt(a.pekan || a.minggu) === w);
+                                    if (alok) {
+                                        html += `<td class="border border-black text-center bg-sky-200 text-sky-950 font-extrabold text-[8px] p-0 align-middle">${alok.jp}</td>`;
                                     } else {
                                         html += `<td class="border border-black text-center text-transparent p-0">-</td>`;
                                     }
                                 }
-                            });
-
-                            html += `</tr>`;
+                            }
                         });
-                    }
+                        html += `</tr>`;
+                    });
                 });
                 
                 html += `
@@ -3037,26 +2880,6 @@
 
             html += buildDocumentSignaturesHTML();
             return html;
-        }
-
-        function getNonEfektifTag(month, week, semester, keg) {
-            if (semester === "1") {
-                if (keg.stsMonthS1 === month && keg.stsWeekS1 === week) return "STS";
-                if (keg.sasMonthS1 === month && keg.sasWeekS1 === week) return "SAS";
-                if (keg.liburMonthS1 === month && week >= keg.liburStartS1 && week <= keg.liburEndS1) return "LBR";
-            } else {
-                if (keg.stsMonthS2 === month && keg.stsWeekS2 === week) return "STS";
-                if (keg.sasMonthS2 === month && keg.sasWeekS2 === week) return "SAS";
-                if (keg.liburMonthS2 === month && week >= keg.liburStartS2 && week <= keg.liburEndS2) return "LBR";
-            }
-
-            const customList = appData.kalender.customKegiatan || [];
-            const found = customList.find(k => k.semester === semester && k.bulan === month && k.minggu === week);
-            if (found) {
-                return found.singkatan.toUpperCase();
-            }
-
-            return null;
         }
 
         function setPrintPageSize(orientation) {
@@ -3300,31 +3123,17 @@
 
             const promesSheetData = [];
             appData.promes.forEach((p, i) => {
-                if(p.tps && p.tps.length > 0) {
-                    p.tps.forEach((tpObj) => {
-                        promesSheetData.push({
-                            "No": i + 1,
-                            "Materi Pembelajaran": p.materi,
-                            "Tujuan Pembelajaran Khusus": tpObj.text,
-                            "Alokasi JP (Per TP)": tpObj.jp,
-                            "Kelas": "Kelas " + p.kelas,
-                            "Semester": "Semester " + p.semester,
-                            "Bulan": p.bulan,
-                            "Minggu Ke-": p.minggu
-                        });
-                    });
-                } else {
-                    promesSheetData.push({
-                        "No": i + 1,
-                        "Materi Pembelajaran": p.materi,
-                        "Tujuan Pembelajaran Khusus": "-",
-                        "Alokasi JP Total": p.jp,
-                        "Kelas": "Kelas " + p.kelas,
-                        "Semester": "Semester " + p.semester,
-                        "Bulan": p.bulan,
-                        "Minggu Ke-": p.pekan
-                    });
-                }
+                const totalJp = p.alokasi.reduce((s,a) => s+a.jp, 0);
+                const rincian = p.alokasi.map(a => `${a.bulan} Mgu-${a.pekan || a.minggu} (${a.jp} JP)`).join(", ");
+                promesSheetData.push({
+                    "No": i + 1,
+                    "Materi Pembelajaran": p.materi,
+                    "Tujuan Pembelajaran Khusus": p.tp,
+                    "Alokasi JP Total": totalJp,
+                    "Rincian Alokasi Distribusi": rincian,
+                    "Kelas": "Kelas " + p.kelas,
+                    "Semester": "Semester " + p.semester
+                });
             });
             const wsPromes = XLSX.utils.json_to_sheet(promesSheetData);
             XLSX.utils.book_append_sheet(wb, wsPromes, "PROGRAM SEMESTER (PROMES)");
@@ -3401,7 +3210,6 @@
                             stsMonthS1: "September", stsWeekS1: 3,
                             sasMonthS1: "Desember", sasWeekS1: 1,
                             liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
-
                             stsMonthS2: "Maret", stsWeekS2: 2,
                             sasMonthS2: "Juni", sasWeekS2: 1,
                             liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
@@ -3422,17 +3230,21 @@
                             kelas: "4", fase: "Fase B", semester: "1", jp_materi: 14, jp_ph: 2, jp: 16, 
                             cp: "Peserta didik mengidentifikasi norma-norma di masyarakat.", 
                             tps: ["Mematuhi norma kesopanan dan kesusilaan di sekolah.", "Mengidentifikasi sanksi dari pelanggaran aturan lalu lintas."], 
-                            materi: "Konstitusi dan Norma di Masyarakat", bulan: "Agustus" 
+                            materi: "Konstitusi dan Norma di Masyarakat", bulan: "Agustus - September" 
                         }
                     ],
                     promes: [
                         { 
-                            materi: "Pancasila Sebagai Nilai Kehidupan", kelas: "4", jp: 5, bulan: "Juli", minggu: 3, semester: "1", 
-                            tps: [{ text: "Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.", jp: 5 }] 
+                            id: "dp1", materi: "Pancasila Sebagai Nilai Kehidupan", tp: "Menyebutkan sila-sila Pancasila secara berurutan beserta lambangnya.", kelas: "4", semester: "1", 
+                            alokasi: [{ bulan: "Juli", minggu: 3, jp: 5 }] 
                         },
                         { 
-                            materi: "Pancasila Sebagai Nilai Kehidupan", kelas: "4", jp: 7, bulan: "Juli", minggu: 4, semester: "1", 
-                            tps: [{ text: "Menceritakan sejarah perumusan Pancasila sebagai dasar negara.", jp: 5 }, { text: "Penilaian Harian / Ulangan Harian", jp: 2 }] 
+                            id: "dp2", materi: "Pancasila Sebagai Nilai Kehidupan", tp: "Menceritakan sejarah perumusan Pancasila sebagai dasar negara.", kelas: "4", semester: "1", 
+                            alokasi: [{ bulan: "Juli", minggu: 4, jp: 5 }] 
+                        },
+                        { 
+                            id: "dp3", materi: "Pancasila Sebagai Nilai Kehidupan", tp: "Penilaian Harian / Ulangan Harian", kelas: "4", semester: "1", 
+                            alokasi: [{ bulan: "Juli", minggu: 4, jp: 2 }] 
                         }
                     ]
                 };
@@ -3460,8 +3272,12 @@
                         totalGanjil: { jul: 4, agu: 5, sep: 4, okt: 5, nov: 4, des: 4 },
                         totalGenap: { jan: 5, feb: 4, mar: 4, apr: 4, mei: 5, jun: 4 },
                         kegiatan: {
-                            stsMonthS1: "September", stsWeekS1: 3, sasMonthS1: "Desember", sasWeekS1: 1, liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
-                            stsMonthS2: "Maret", stsWeekS2: 2, sasMonthS2: "Juni", sasWeekS2: 1, liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
+                            stsMonthS1: "September", stsWeekS1: 3,
+                            sasMonthS1: "Desember", sasWeekS1: 1,
+                            liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
+                            stsMonthS2: "Maret", stsWeekS2: 2,
+                            sasMonthS2: "Juni", sasMonthS2: 1,
+                            liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
                         },
                         customKegiatan: [
                             { id: "c1", nama: "Pengenalan Ekstrakurikuler Mandiri", singkatan: "PEM", semester: "1", bulan: "Juli", minggu: 2 }
@@ -3483,12 +3299,20 @@
                     ],
                     promes: [
                         { 
-                            materi: "Sains dan Pengukuran", kelas: "7", jp: 5, bulan: "Juli", minggu: 1, semester: "1", 
-                            tps: [{ text: "Merancang langkah metode ilmiah penelitian sains sederhana.", jp: 5 }] 
+                            id: "dp4", materi: "Sains dan Pengukuran", tp: "Merancang langkah metode ilmiah penelitian sains sederhana.", kelas: "7", semester: "1", 
+                            alokasi: [{ bulan: "Juli", minggu: 1, jp: 5 }] 
                         },
                         { 
-                            materi: "Sains dan Pengukuran", kelas: "7", jp: 10, bulan: "Juli", minggu: 3, semester: "1", 
-                            tps: [{ text: "Menggunakan alat ukur jangka sorong dan mikrometer sekrup dengan presisi.", jp: 4 }, { text: "Menentukan besaran pokok dan besaran turunan pada pengukuran fisis.", jp: 4 }, { text: "Penilaian Harian / Ulangan Harian", jp: 2 }] 
+                            id: "dp5", materi: "Sains dan Pengukuran", tp: "Menggunakan alat ukur jangka sorong dan mikrometer sekrup dengan presisi.", kelas: "7", semester: "1", 
+                            alokasi: [{ bulan: "Juli", minggu: 3, jp: 4 }] 
+                        },
+                        { 
+                            id: "dp6", materi: "Sains dan Pengukuran", tp: "Menentukan besaran pokok dan besaran turunan pada pengukuran fisis.", kelas: "7", semester: "1", 
+                            alokasi: [{ bulan: "Juli", minggu: 3, jp: 4 }] 
+                        },
+                        { 
+                            id: "dp7", materi: "Sains dan Pengukuran", tp: "Penilaian Harian / Ulangan Harian", kelas: "7", semester: "1", 
+                            alokasi: [{ bulan: "Juli", minggu: 3, jp: 2 }] 
                         }
                     ]
                 };
@@ -3539,12 +3363,16 @@
                     ],
                     promes: [
                         { 
-                            materi: "Vektor Fisis", kelas: "11", jp: 8, bulan: "Juli", minggu: 2, semester: "1", 
-                            tps: [{ text: "Menentukan resultan vektor dengan metode grafis (poligon dan jajar genjang).", jp: 8 }] 
+                            id: "dp8", materi: "Vektor Fisis", tp: "Menentukan resultan vektor dengan metode grafis (poligon dan jajar genjang).", kelas: "11", semester: "1", 
+                            alokasi: [{ bulan: "Juli", minggu: 2, jp: 8 }] 
                         },
                         { 
-                            materi: "Vektor Fisis", kelas: "11", jp: 8, bulan: "Juli", minggu: 3, semester: "1", 
-                            tps: [{ text: "Menghitung komponen vektor fisis pada koordinat kartesius 2 dimensi.", jp: 6 }, { text: "Penilaian Harian / Ulangan Harian", jp: 2 }] 
+                            id: "dp9", materi: "Vektor Fisis", tp: "Menghitung komponen vektor fisis pada koordinat kartesius 2 dimensi.", kelas: "11", semester: "1", 
+                            alokasi: [{ bulan: "Juli", minggu: 3, jp: 6 }] 
+                        },
+                        { 
+                            id: "dp10", materi: "Vektor Fisis", tp: "Penilaian Harian / Ulangan Harian", kelas: "11", semester: "1", 
+                            alokasi: [{ bulan: "Juli", minggu: 3, jp: 2 }] 
                         }
                     ]
                 };
