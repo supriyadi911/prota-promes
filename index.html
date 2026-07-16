@@ -1107,8 +1107,11 @@
                                     <!-- Diisi dinamis -->
                                 </select>
                             </div>
-                            <div class="text-xs text-slate-400">
-                                Semester Terpilih: <strong class="text-primary-500" id="promes-current-semester-lbl">Semester 1 (Ganjil)</strong>
+                            <div>
+                                <select id="filter-promes-semester" onchange="renderPromes()" class="border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-800 rounded-lg px-3 py-1.5 text-xs focus:ring-1 focus:ring-primary-500 font-bold text-primary-500">
+                                    <option value="1">Semester 1 (Ganjil)</option>
+                                    <option value="2">Semester 2 (Genap)</option>
+                                </select>
                             </div>
                         </div>
 
@@ -1577,6 +1580,8 @@
             safeSetVal('sch-subject', appData.school.subject || '');
             safeSetVal('sch-city', appData.school.city || '');
 
+            safeSetVal('filter-promes-semester', appData.school.semester || '1');
+
             const levels = document.getElementsByName('sch-level');
             levels.forEach(r => { if (r.value === appData.school.level) r.checked = true; });
 
@@ -1700,7 +1705,6 @@
             const headerTitle = document.getElementById('header-title');
             if (headerTitle) headerTitle.textContent = titles[tabId] || "Portal Administrasi";
 
-            // Pastikan jika tab dipindah, filter promes diupdate.
             if (tabId === 'promes') renderPromes(); 
             if (tabId === 'dashboard') renderCharts();
         }
@@ -2211,8 +2215,13 @@
         // CORE LOGIC: PROGRAM SEMESTER (PROMES) NEW v3.5
         // ==========================================
 
-        function getFirstMonthOfSemester() {
-            return appData.school.semester === "1" ? "Juli" : "Januari";
+        function getCurrentPromesSemester() {
+            const filter = document.getElementById('filter-promes-semester');
+            return filter ? filter.value : (appData.school.semester || "1");
+        }
+
+        function getFirstMonthOfSemester(semester) {
+            return semester === "1" ? "Juli" : "Januari";
         }
 
         function getWeeksInMonth(m, semester) {
@@ -2225,7 +2234,7 @@
             document.getElementById('promes-modal').classList.remove('hidden');
             const selMateri = document.getElementById('promes-modal-materi');
             const selTp = document.getElementById('promes-modal-tp');
-            const currentSemester = appData.school.semester;
+            const currentSemester = getCurrentPromesSemester();
             
             selMateri.innerHTML = '<option value="">-- Pilih Materi Pokok --</option>';
             appData.prota.forEach((item, index) => {
@@ -2246,12 +2255,12 @@
                     selTp.value = data.tp;
                 }
                 
-                currentPromesAlokasi = data.alokasi ? JSON.parse(JSON.stringify(data.alokasi)) : [{ bulan: getFirstMonthOfSemester(), minggu: 1, jp: 2 }];
+                currentPromesAlokasi = data.alokasi ? JSON.parse(JSON.stringify(data.alokasi)) : [{ bulan: getFirstMonthOfSemester(currentSemester), minggu: 1, jp: 2 }];
             } else {
                 document.getElementById('promes-modal-title').textContent = "Distribusi Jadwal TP Baru";
                 document.getElementById('promes-modal-index').value = "";
                 selTp.innerHTML = '<option value="">-- Pilih Materi Pokok Terlebih Dahulu --</option>';
-                currentPromesAlokasi = [{ bulan: getFirstMonthOfSemester(), minggu: 1, jp: 2 }];
+                currentPromesAlokasi = [{ bulan: getFirstMonthOfSemester(currentSemester), minggu: 1, jp: 2 }];
             }
             
             renderPromesAlokasiRows();
@@ -2280,7 +2289,8 @@
                 }
                 
                 if (document.getElementById('promes-modal-index').value === "") {
-                    const defaultBulan = p.bulan ? p.bulan.split(' - ')[0] : getFirstMonthOfSemester();
+                    const currentSemester = getCurrentPromesSemester();
+                    const defaultBulan = p.bulan ? p.bulan.split(' - ')[0] : getFirstMonthOfSemester(currentSemester);
                     currentPromesAlokasi = [{ bulan: defaultBulan, minggu: 1, jp: 2 }];
                     renderPromesAlokasiRows();
                 }
@@ -2291,7 +2301,7 @@
             const container = document.getElementById('promes-alokasi-container');
             container.innerHTML = "";
             
-            const currentSemester = appData.school.semester;
+            const currentSemester = getCurrentPromesSemester();
             const months = currentSemester === "1" 
                 ? ["Juli", "Agustus", "September", "Oktober", "November", "Desember"]
                 : ["Januari", "Februari", "Maret", "April", "Mei", "Juni"];
@@ -2338,8 +2348,9 @@
 
         function addPromesAlokasiRow() {
             const lastAlok = currentPromesAlokasi[currentPromesAlokasi.length - 1];
+            const currentSemester = getCurrentPromesSemester();
             currentPromesAlokasi.push({ 
-                bulan: lastAlok ? lastAlok.bulan : getFirstMonthOfSemester(), 
+                bulan: lastAlok ? lastAlok.bulan : getFirstMonthOfSemester(currentSemester), 
                 minggu: lastAlok ? lastAlok.pekan || lastAlok.minggu : 1, 
                 jp: 2 
             });
@@ -2374,7 +2385,7 @@
             const idxEdit = document.getElementById('promes-modal-index').value;
             const protaIdx = document.getElementById('promes-modal-materi').value;
             const tpSelect = document.getElementById('promes-modal-tp').value;
-            const currentSemester = appData.school.semester;
+            const currentSemester = getCurrentPromesSemester();
 
             if (protaIdx === "" || tpSelect === "") {
                 showNotif("Error", "Materi Pokok dan TP wajib dipilih!", "error"); return;
@@ -2417,7 +2428,7 @@
         }
 
         function copyProtaToPromesAll() {
-            const currentSemester = appData.school.semester;
+            const currentSemester = getCurrentPromesSemester();
             const protaFilter = appData.prota.filter(p => p.semester === currentSemester);
 
             if (protaFilter.length === 0) {
@@ -2429,7 +2440,7 @@
                 protaFilter.forEach(p => {
                     const validJpMateri = p.jp_materi !== undefined ? p.jp_materi : p.jp;
                     const jpPerTp = p.tps && p.tps.length > 0 ? Math.max(1, Math.floor(validJpMateri / p.tps.length)) : 0;
-                    const defaultBulan = p.bulan ? p.bulan.split(' - ')[0] : getFirstMonthOfSemester();
+                    const defaultBulan = p.bulan ? p.bulan.split(' - ')[0] : getFirstMonthOfSemester(currentSemester);
 
                     if (p.tps) {
                         p.tps.forEach(tp => {
@@ -2537,7 +2548,7 @@
 
             const filterPromesKelas = document.getElementById('filter-promes-kelas');
             const classFilter = filterPromesKelas ? filterPromesKelas.value : "";
-            const currentSemester = appData.school.semester;
+            const currentSemester = getCurrentPromesSemester();
 
             listEl.innerHTML = "";
 
@@ -2606,7 +2617,7 @@
             if (count === 0) {
                 listEl.innerHTML = `
                     <tr>
-                        <td colspan="6" class="px-4 py-12 text-center text-xs text-slate-400">
+                        <td colspan="7" class="px-4 py-12 text-center text-xs text-slate-400">
                             <i class="fa-solid fa-calendar-xmark text-3xl mb-2 text-slate-300 block"></i>
                             Belum ada jadwal distribusi TP yang dipetakan pada PROMES.
                         </td>
@@ -2823,7 +2834,7 @@
         }
 
         function buildPromesPrintHTML() {
-            const currentSemester = appData.school.semester;
+            const currentSemester = getCurrentPromesSemester();
             const filterPromesKelas = document.getElementById('filter-promes-kelas');
             const classFilter = filterPromesKelas ? filterPromesKelas.value : "";
             const kelasText = classFilter ? `Fase ${appData.prota.find(item => item.kelas === classFilter)?.fase || ''} / Kelas ${classFilter}` : "Semua Kelas Terdaftar";
@@ -3385,8 +3396,12 @@
                         totalGanjil: { jul: 4, agu: 5, sep: 4, okt: 5, nov: 4, des: 4 },
                         totalGenap: { jan: 5, feb: 4, mar: 4, apr: 4, mei: 5, jun: 4 },
                         kegiatan: {
-                            stsMonthS1: "September", stsWeekS1: 3, sasMonthS1: "Desember", sasWeekS1: 1, liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
-                            stsMonthS2: "Maret", stsWeekS2: 2, sasMonthS2: "Juni", sasWeekS2: 1, liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
+                            stsMonthS1: "September", stsWeekS1: 3,
+                            sasMonthS1: "Desember", sasWeekS1: 1,
+                            liburMonthS1: "Desember", liburStartS1: 3, liburEndS1: 4,
+                            stsMonthS2: "Maret", stsWeekS2: 2,
+                            sasMonthS2: "Juni", sasWeekS2: 1,
+                            liburMonthS2: "Juni", liburStartS2: 3, liburEndS2: 4
                         },
                         customKegiatan: [
                             { id: "c1", nama: "Pengenalan Ekstrakurikuler Mandiri", singkatan: "PEM", semester: "1", bulan: "Juli", minggu: 2 }
