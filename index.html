@@ -1436,7 +1436,7 @@
                         if (parsedData.promes[0].tps !== undefined) {
                             let newPromes = [];
                             parsedData.promes.forEach(old => {
-                                old.tps.forEach(tp => {
+                                (old.tps || []).forEach(tp => {
                                     newPromes.push({
                                         id: 'migrated-' + Math.random().toString(36).substr(2, 9),
                                         materi: old.materi,
@@ -2246,7 +2246,7 @@
                     selTp.value = data.tp;
                 }
                 
-                currentPromesAlokasi = JSON.parse(JSON.stringify(data.alokasi));
+                currentPromesAlokasi = data.alokasi ? JSON.parse(JSON.stringify(data.alokasi)) : [{ bulan: getFirstMonthOfSemester(), minggu: 1, jp: 2 }];
             } else {
                 document.getElementById('promes-modal-title').textContent = "Distribusi Jadwal TP Baru";
                 document.getElementById('promes-modal-index').value = "";
@@ -2298,8 +2298,8 @@
                 
             let totalDistribusi = 0;
 
-            currentPromesAlokasi.forEach((alok, idx) => {
-                totalDistribusi += alok.jp;
+            (currentPromesAlokasi || []).forEach((alok, idx) => {
+                totalDistribusi += alok.jp || 0;
 
                 let monthOptions = "";
                 months.forEach(m => {
@@ -2554,11 +2554,12 @@
                 const actualIndex = appData.promes.findIndex(p => p.id === item.id);
                 count++;
                 
-                const totalJpItem = item.alokasi.reduce((s, a) => s + a.jp, 0);
+                const alokasiArr = item.alokasi || [];
+                const totalJpItem = alokasiArr.reduce((s, a) => s + (a.jp || 0), 0);
                 totalJp += totalJpItem;
 
                 let rincianHTML = `<div class="flex flex-wrap gap-2 mt-2">`;
-                item.alokasi.forEach(a => {
+                alokasiArr.forEach(a => {
                     rincianHTML += `
                         <span class="text-[10px] bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 px-2 py-1 rounded shadow-sm">
                             <i class="fa-regular fa-calendar mr-1"></i> ${a.bulan}, Mgu ke-${a.pekan || a.minggu} <strong class="ml-1">${a.jp} JP</strong>
@@ -2605,7 +2606,7 @@
             if (count === 0) {
                 listEl.innerHTML = `
                     <tr>
-                        <td colspan="7" class="px-4 py-12 text-center text-xs text-slate-400">
+                        <td colspan="6" class="px-4 py-12 text-center text-xs text-slate-400">
                             <i class="fa-solid fa-calendar-xmark text-3xl mb-2 text-slate-300 block"></i>
                             Belum ada jadwal distribusi TP yang dipetakan pada PROMES.
                         </td>
@@ -2897,7 +2898,8 @@
                     const rowSpan = items.length;
                     
                     items.forEach((item, tpIdx) => {
-                        const totalJpItem = item.alokasi.reduce((s,a) => s+a.jp, 0);
+                        const alokasiArr = item.alokasi || [];
+                        const totalJpItem = alokasiArr.reduce((s,a) => s + (a.jp || 0), 0);
                         totalJpPromes += totalJpItem;
                         
                         html += `<tr class="hover:bg-slate-50">`;
@@ -2922,7 +2924,7 @@
                                 if (nonEfektifTag) {
                                     html += `<td class="border border-black text-center bg-rose-200 text-rose-900 font-bold text-[6px] p-0 align-middle">${nonEfektifTag}</td>`;
                                 } else {
-                                    const alok = item.alokasi.find(a => a.bulan === m && parseInt(a.pekan || a.minggu) === w);
+                                    const alok = alokasiArr.find(a => a.bulan === m && parseInt(a.pekan || a.minggu) === w);
                                     if (alok) {
                                         html += `<td class="border border-black text-center bg-sky-200 text-sky-950 font-extrabold text-[8px] p-0 align-middle">${alok.jp}</td>`;
                                     } else {
@@ -3227,8 +3229,9 @@
 
             const promesSheetData = [];
             appData.promes.forEach((p, i) => {
-                const totalJp = p.alokasi.reduce((s,a) => s+a.jp, 0);
-                const rincian = p.alokasi.map(a => `${a.bulan} Mgu-${a.pekan || a.minggu} (${a.jp} JP)`).join(", ");
+                const alokasiArr = p.alokasi || [];
+                const totalJp = alokasiArr.reduce((s,a) => s + (a.jp || 0), 0);
+                const rincian = alokasiArr.map(a => `${a.bulan} Mgu-${a.pekan || a.minggu} (${a.jp} JP)`).join(", ");
                 promesSheetData.push({
                     "No": i + 1,
                     "Materi Pembelajaran": p.materi,
